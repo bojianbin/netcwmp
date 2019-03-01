@@ -1400,15 +1400,15 @@ int  cwmp_parse_setparametervalues_message(env_t * env , xmldoc_t * doc, paramet
 
     while (parameterNode)
     {
-	xmlnode_t * pnode  = parameterNode;
+		xmlnode_t * pnode  = parameterNode;
 
-	parameterNode = XmlNodeGetNextSibling(parameterNode);
+		parameterNode = XmlNodeGetNextSibling(parameterNode);
 
         const char * name = cwmp_xml_get_node_value(cwmp_xml_get_child_with_name(pnode, "Name"));
         const char * value = cwmp_xml_get_node_value(cwmp_xml_get_child_with_name(pnode, "Value"));
-	cwmp_log_debug("set parameter value (%s=%s)", name, value);
-	parameter_t * parameter = cwmp_create_parameter(env ,  name, value, TRstrlen(value), 0);
-	if (!parameter)
+		cwmp_log_debug("set parameter value (%s=%s)", name, value);
+		parameter_t * parameter = cwmp_create_parameter(env ,  name, value, TRstrlen(value), 0);
+		if (!parameter)
         {
             //faild
             continue;
@@ -1427,19 +1427,19 @@ int  cwmp_parse_setparametervalues_message(env_t * env , xmldoc_t * doc, paramet
 
             if(pn->set)
             {
-		//exec set function
-		parameter->fault_code =  (*pn->set)(env->cwmp, name,  value, TRstrlen(value), callback_register_task);
+				//exec set function
+				parameter->fault_code =  (*pn->set)(env->cwmp, name,  value, TRstrlen(value), callback_register_task);
             }
-	    else
-	    {
-		parameter->fault_code = FAULT_CODE_9008;
-	    }
+	    	else
+	    	{
+				parameter->fault_code = FAULT_CODE_9008;
+	    	}
 
-	    if(parameter->fault_code != FAULT_CODE_OK)
-	    {
-		cwmp_set_faultcode(fault, FAULT_CODE_9003);
-		rc = CWMP_ERROR;
-	    }
+		    if(parameter->fault_code != FAULT_CODE_OK)
+		    {
+				cwmp_set_faultcode(fault, FAULT_CODE_9003);
+				rc = CWMP_ERROR;
+		    }
 
             if ((*ppl)->count >= (*ppl)->size - 1)
             {
@@ -1451,7 +1451,7 @@ int  cwmp_parse_setparametervalues_message(env_t * env , xmldoc_t * doc, paramet
                 (*ppl)->parameters = pp;
                 (*ppl)->size += CWMP_RENEW_SIZE;
             }
-	    (*ppl)->count += 1;
+	    	(*ppl)->count += 1;
             *nextpv = parameter;
             nextpv++;
 
@@ -1461,6 +1461,7 @@ int  cwmp_parse_setparametervalues_message(env_t * env , xmldoc_t * doc, paramet
 
     }
 
+	
     return rc;
 }
 
@@ -1793,14 +1794,14 @@ xmlnode_t * cwmp_create_event_node(env_t * env ,  xmlnode_t * parent, const even
         ESN(XML_OK, cwmp_xml_set_node_attribute(env ,  eventCodeNode, SOAP_XSI_TYPE, SOAP_XSD_STRING));
 
 
-	if (pe[count]->event == INFORM_MREBOOT ) //|| pe[count]->event == INFORM_BOOTSTRAP)
-	{
-        	ESA(eventCommandKeyNode, cwmp_xml_create_child_node(env ,  eventStructNode, NULL, "CommandKey", pe[count]->command_key));
-	}
-	else
-	{
-		ESA(eventCommandKeyNode, cwmp_xml_create_child_node(env ,  eventStructNode, NULL, "CommandKey", NULL));
-	}
+		if (pe[count]->event == INFORM_MREBOOT ) //|| pe[count]->event == INFORM_BOOTSTRAP)
+		{
+	    	ESA(eventCommandKeyNode, cwmp_xml_create_child_node(env ,  eventStructNode, NULL, "CommandKey", pe[count]->command_key));
+		}
+		else
+		{
+			ESA(eventCommandKeyNode, cwmp_xml_create_child_node(env ,  eventStructNode, NULL, "CommandKey", NULL));
+		}
         ++count ;
     }
 

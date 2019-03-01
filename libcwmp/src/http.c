@@ -1237,7 +1237,7 @@ int http_read_response(http_socket_t * sock, http_response_t * response, pool_t 
         cwmp_log_info("Http read response code is (%d)\n", code);        
     }
    
-     return code;
+    return code;
     
 }
 
@@ -1761,19 +1761,19 @@ int http_receive_file(const char *fromurl, const char * tofile)
 	pool = pool_create(POOL_DEFAULT_SIZE);
 	http_dest_create(&dest, fromurl, pool);
    
-        int rc = http_socket_create(&sock, AF_INET, SOCK_STREAM, 0, pool);
-        if (rc != CWMP_OK)
-        {
-            cwmp_log_error("http receive file: create socket error.");
-            goto out;
-        }
+    int rc = http_socket_create(&sock, AF_INET, SOCK_STREAM, 0, pool);
+    if (rc != CWMP_OK)
+    {
+        cwmp_log_error("http receive file: create socket error.");
+        goto out;
+    }
 
-        rc = http_socket_connect(sock, AF_INET, dest->host, dest->port);
-        if(rc != CWMP_OK)
-        {
-            cwmp_log_error("connect to host faild. Host is %s:%d.", dest->host, dest->port);
-            goto out;
-        }
+    rc = http_socket_connect(sock, AF_INET, dest->host, dest->port);
+    if(rc != CWMP_OK)
+    {
+        cwmp_log_error("connect to host faild. Host is %s:%d.", dest->host, dest->port);
+        goto out;
+    }
 
 	tf = fopen(tofile, "wb+");
 	if(!tf)
@@ -1783,23 +1783,24 @@ int http_receive_file(const char *fromurl, const char * tofile)
 	}
 
 	http_socket_set_writefunction(sock, http_receive_file_callback, tf);
-        http_socket_set_recvtimeout(sock, 30);
+    http_socket_set_recvtimeout(sock, 30);
 
 	http_request_create(&request, pool);
 	request->dest = dest;
 	rc = http_get(sock, request, NULL, pool);
-        if(rc <= 0)
-        {
-            cwmp_log_error("http get host faild. Host is %s:%d.", dest->host, dest->port);
-            goto out;
-        }
+    if(rc <= 0)
+    {
+        cwmp_log_error("http get host faild. Host is %s:%d.", dest->host, dest->port);
+        goto out;
+    }
 
 
-        http_response_create(&response, pool);
+    http_response_create(&response, pool);
 
 	rc = http_read_response(sock, response, pool);
 
-
+	if(rc == 200)
+		rc = 0;
 	
 out:
 	if(tf)

@@ -58,7 +58,8 @@ typedef enum
 #define TASK_UPLOAD_TAG  2
 #define TASK_REBOOT_TAG  3
 #define TASK_FACTORYRESET_TAG 4
-#define TASK_CALLBACK_TAG 5 
+#define TASK_CALLBACK_TAG 5
+
 
 
 struct event_code_st

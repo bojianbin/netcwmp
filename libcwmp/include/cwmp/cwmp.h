@@ -288,20 +288,46 @@ enum cwmp_type_t
 
 enum InformEventType
 {
+	/*1:first time con to the ACS
+	 *2:first time con to the ACS after reset
+	 *3:first time con to the ACS after ACS URL modified
+	 */
 	INFORM_BOOTSTRAP = 0,
+	/*powered up(initial system boot,reboot in any cause)*/
 	INFORM_BOOT,
+	/*session was established on a periodic inform interval*/
 	INFORM_PERIODIC,
+	/*due to scheduleinform method*/
 	INFORM_SCHEDULED,
+	/*
+	Indicates that since the last successful Non-HEARTBEAT Inform,
+	the value of one or more Parameters with Passive or Active notification enabled has been modified 
+	*/
 	INFORM_VALUECHANGE,
+	/*DEPRECATED*/
 	INFORM_KICKED,
+	/*indicates that the session was established 
+	 *due to a connection request from the ACS*/
 	INFORM_CONNECTIONREQUEST,
+	/*was established to indicate the completion of a previously requested download 
+	 *or upload (either successful or unsuccessful)
+	 *This event code MUST only be used with the “M Download”, “M ScheduleDownload”
+	 *and/or “M Upload” event codes*/
 	INFORM_TRANSFERCOMPLETE,
+	/*Used when reestablishing a connection to the ACS after completing one or more diagnostic test initiated by the ACS.*/
 	INFORM_DIAGNOSTICSCOMPLETE,
+	/*was established for the CPE to call the RequestDownload method one or more times*/
 	INFORM_REQUESTDOWNLOAD,
+	/*indicate the completion of a download or upload that was not specifically requested by the ACS */
 	INFORM_AUTONOMOUSTRANSFERCOMPLETE,
+	/*The CPE rebooted upon request from the ACS through the use of the Reboot RPC.*/
 	INFORM_MREBOOT,
+	/*The ACS requested a scheduled Inform.*/
 	INFORM_MSCHEDULEINFORM,
+	/*A content download previously requested by the ACS using the Download method has finished. 
+	 *Overlaps with “TRANSFER COMPLETE”.*/
 	INFORM_MDOWNLOAD,
+	/*A content upload previously requested by the ACS using the Upload method*/
 	INFORM_MUPLOAD,
 	INFORM_ACCOUNTCHANGE,
 	INFORM_MVENDORSPECRPC,

@@ -19,7 +19,7 @@
 #include <errno.h>
 
 #define MALLOC(size)					malloc(size)
-#define FREE(x)							free(x)
+#define FREE(x)							if(x) free(x)
 
 
 #define XMALLOC(size)                   pool_pcalloc(env->pool, size)

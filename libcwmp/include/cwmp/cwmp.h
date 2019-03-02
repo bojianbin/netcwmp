@@ -490,6 +490,9 @@ int cwmp_create_parameter_node(env_t * env ,  parameter_node_t ** news, const ch
 
 download_arg_t * cwmp_clone_download_arg(download_arg_t * dlarg);
 upload_arg_t * cwmp_clone_upload_arg(upload_arg_t * ularg);
+void cwmp_clone_download_arg_free(download_arg_t * dlarg);
+void cwmp_clone_upload_arg_free(upload_arg_t * ularg);
+
 
 xmldoc_t* cwmp_create_inform_message(env_t * env ,  header_t * header,
 		device_id_t * deviceid,

@@ -1633,7 +1633,23 @@ int cwmp_parse_reboot_message(env_t * env , xmldoc_t *doc, char ** key, fault_co
 
     return CWMP_OK;
 }
+void cwmp_clone_download_arg_free(download_arg_t *dlarg)
+{
+	if(!dlarg)
+		return;
 
+	FREE(dlarg->cmdkey);
+	FREE(dlarg->filetype);
+	FREE(dlarg->url);
+	FREE(dlarg->username);
+	FREE(dlarg->password);
+	FREE(dlarg->targetname);
+	FREE(dlarg->succurl);
+	FREE(dlarg->failurl);
+
+	FREE(dlarg);
+	return;
+}
 download_arg_t * cwmp_clone_download_arg(download_arg_t * dlarg)
 {
 	if(!dlarg)
@@ -1672,7 +1688,21 @@ download_arg_t * cwmp_clone_download_arg(download_arg_t * dlarg)
 	return newdl;
 
 }
+void cwmp_clone_upload_arg_free(upload_arg_t * ularg)
+{
+	if(!ularg)
+		return;
 
+	FREE(ularg->cmdkey);
+	FREE(ularg->filetype);
+	FREE(ularg->url);
+	FREE(ularg->username);
+	FREE(ularg->password);
+	FREE(ularg->delaysec);
+
+	FREE(ularg);
+	return;
+}
 upload_arg_t * cwmp_clone_upload_arg(upload_arg_t * ularg)
 {
 	if(!ularg)

@@ -949,6 +949,7 @@ xmldoc_t *  cwmp_session_create_download_response_message(cwmp_session_t * sessi
     int rv;
     char * key;
     fault_code_t fault;
+	
     FUNCTION_TRACE();
     rv = cwmp_parse_header_node(cwmp_get_header_node(doc), &header, pool);
     if (rv != CWMP_OK)
@@ -964,17 +965,17 @@ xmldoc_t *  cwmp_session_create_download_response_message(cwmp_session_t * sessi
     //begin download process
 
    if(rv == CWMP_OK)
-    {
-	download_arg_t * newdlarg = cwmp_clone_download_arg(dlarg);
-	if(newdlarg != NULL)
-	{
-		cwmp_t * cwmp = session->cwmp;
+   {
+		download_arg_t * newdlarg = cwmp_clone_download_arg(dlarg);
+		if(newdlarg != NULL)
+		{
+			cwmp_t * cwmp = session->cwmp;
 
-		queue_push(cwmp->queue, newdlarg, TASK_DOWNLOAD_TAG);
+			queue_push(cwmp->queue, newdlarg, TASK_DOWNLOAD_TAG);
 
-		cwmp_log_debug("push new download task to queue! url: %s ", newdlarg->url);
-	}
-    }
+			cwmp_log_debug("push new download task to queue! url: %s ", newdlarg->url);
+		}
+   }
 
    int status = 1;
 

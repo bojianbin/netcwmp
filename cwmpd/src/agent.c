@@ -908,7 +908,7 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,dlarg->cmdkey, faultcode, starttime, endtime);
 
 					
-					FREE(dlarg);
+					cwmp_clone_download_arg_free(dlarg);
 				}
 				break;
 
@@ -924,8 +924,8 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,ularg->cmdkey, faultcode, starttime, endtime);
 					
-					
-					FREE(ularg);
+		
+					cwmp_clone_upload_arg_free(ularg);
 				}
 				break;
 

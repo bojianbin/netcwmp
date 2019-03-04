@@ -99,6 +99,7 @@ int cwmp_event_global_init(cwmp_t * cwmp)
     //判断配置文件是否存在
     if(access(cwmp->event_filename, F_OK) == -1)
     {
+    	cwmp_log_error("can not access event file\n");
         return CWMP_ERROR;
     }
 
@@ -170,8 +171,10 @@ int cwmp_event_init(cwmp_t *cwmp)
 
     cwmp_event_global_init(cwmp);
 
-    if(cwmp->event_global.event_flag == EVENT_REBOOT_NONE_FLAG || cwmp->event_global.event_flag == EVENT_REBOOT_BOOTSTRAP_FLAG)
+    if(cwmp->event_global.event_flag == EVENT_REBOOT_NONE_FLAG 
+		|| cwmp->event_global.event_flag == EVENT_REBOOT_BOOTSTRAP_FLAG)
     {
+    	printf("bojianbin   %d\n",cwmp->event_global.event_flag);
 		cwmp->event_global.event_flag = EVENT_REBOOT_BOOTSTRAP_FLAG;    
 		cwmp_event_set_value(cwmp, INFORM_BOOTSTRAP, 1, NULL, 0, 0, 0);
     }    
@@ -482,14 +485,15 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
 				break;
 
 			case INFORM_TRANSFERCOMPLETE:
+				
 				cwmp->event_global.event_flag |= EVENT_REBOOT_TRANSFERCOMPLETE_FLAG;
 	            memset(cwmp->event_global.event_key, 0, COMMAND_KEY_LEN+1);
 				strcpy(cwmp->event_global.event_key, pec[i]->command_key);
 				cwmp->event_global.fault_code = pec[i]->fault_code;
 				cwmp->event_global.start = pec[i]->start;
 				cwmp->event_global.end = pec[i]->end;			
-	            cwmp_event_file_save(cwmp);
-
+		        
+				cwmp_event_file_save(cwmp);
 				break;
 				
 		}
@@ -534,7 +538,12 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
     return CWMP_OK;
 }
 
+int cwmp_clear_global_event(cwmp_t *cwmp)
+{
+	cwmp->event_global.event_flag = EVENT_REBOOT_ACS_FLAG;
 
+	return cwmp_event_file_save(cwmp);
+}
 //取得active event以及count
 /*
 static int get_active_event_list(cwmp_t *cwmp, event_list_t **pevent_list, int *pevt_count)

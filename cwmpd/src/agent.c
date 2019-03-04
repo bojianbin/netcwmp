@@ -225,6 +225,7 @@ void cwmp_agent_start_session(cwmp_t * cwmp)
             switch (session->status)
             {
 	            case CWMP_ST_START:
+					
 	                //create a new connection to acs
 	                cwmp_log_debug("session stutus: New START\n");
 
@@ -246,6 +247,8 @@ void cwmp_agent_start_session(cwmp_t * cwmp)
 					{
 						cwmp_event_clear_active(cwmp);
 					}
+					cwmp_clear_global_event(cwmp);
+					
 					cwmp_log_debug("session stutus: INFORM2\n");
 	                if (cwmp->acs_auth)
 	                {			
@@ -907,6 +910,8 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,dlarg->cmdkey, faultcode, starttime, endtime);
 
+					//cwmp_event_clear_active(cwmp);
+					//handle the event and reboot if any
 					
 					cwmp_clone_download_arg_free(dlarg);
 				}

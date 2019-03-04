@@ -71,9 +71,6 @@ int cwmp_set_var(cwmp_t * cwmp)
     pool_t * pool = pool_create(POOL_DEFAULT_SIZE);
     cwmp->pool = pool;
 
-
-    cwmp_event_init(cwmp);
-
     cwmp->queue = queue_create(pool);
 
     return CWMP_OK;
@@ -124,13 +121,15 @@ int main(int argc, char **argv)
     }
 
     cwmp_getopt(argc, argv);
-    
-    //cwmp_init_db();    
-
-    cwmp_set_var(cwmp);
+   
     cwmp_daemon();
-    
+
+	cwmp_set_var(cwmp);
+	
     cwmp_conf_init(cwmp);
+
+	cwmp_event_init(cwmp);
+	
 
 #ifdef USE_CWMP_OPENSSL
     cwmp_init_ssl(cwmp);

@@ -34,6 +34,6 @@ install:
 	@$(call MESSAGE,"Finished!", $(TARGET))
 	
 clean:
-	@rm -rf src/*.o $(TARGET) 
+	@rm -rf src/*.o src/modules/*.o $(TARGET) 
 	@$(call MESSAGE,"Clean!", $(TARGET))
 

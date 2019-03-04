@@ -1698,7 +1698,6 @@ void cwmp_clone_upload_arg_free(upload_arg_t * ularg)
 	FREE(ularg->url);
 	FREE(ularg->username);
 	FREE(ularg->password);
-	FREE(ularg->delaysec);
 
 	FREE(ularg);
 	return;

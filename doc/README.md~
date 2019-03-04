@@ -15,7 +15,7 @@ build netcwmp:
 
 	cwmpd
 
-#note: please edit rules.mk and open -DUSE_CWMP_OPENSSL if need SSL
+note: please edit rules.mk and open -DUSE_CWMP_OPENSSL if need SSL
 
 
 

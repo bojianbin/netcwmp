@@ -16,7 +16,7 @@ endif
 CFLAGS += -fPIC -I./include -Isrc/inc $(DEFS)
 
 
-all:shared static   install
+all:shared static install
 
 shared:$(libcwmp_SHARED) 
 static:$(libcwmp_STATIC) 

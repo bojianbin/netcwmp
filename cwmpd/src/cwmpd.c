@@ -25,9 +25,9 @@
  ***********************************************************************/
 
 #include "cwmpd.h"
+#include "data_model.h"
 
 #define CWMP_VALUE_UNSET -1
-
 
 
 int              cwmp_argc;

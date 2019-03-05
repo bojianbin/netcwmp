@@ -3,7 +3,7 @@
 
 #include <cwmp/cwmp.h>
 #include "cwmp/queue.h"
-
+#include "cwmp/log.h"
 
 void queue_add(queue_t *q, void * data, int type, int priority, void * arg1, void *arg2) {
 	qnode_t *node;

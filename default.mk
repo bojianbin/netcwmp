@@ -10,8 +10,8 @@
 	@echo "LEAVE $(@D)"
 
 
-
 all: $(PKG_SUBDIRS:%=%/all) extra_all
+
 
 clean: $(PKG_SUBDIRS:%=%/clean) extra_clean
 

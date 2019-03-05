@@ -12,7 +12,7 @@ LDFLAGS += -l:libpool.a
 CFLAGS += -fPIC -I./include -Isrc/inc $(DEFS)
 
 
-all:shared static   install
+all:shared static install
 
 shared:$(libxmlet_SHARED) 
 static:$(libxmlet_STATIC) 

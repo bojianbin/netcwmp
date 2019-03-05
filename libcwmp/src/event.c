@@ -171,33 +171,36 @@ int cwmp_event_init(cwmp_t *cwmp)
 
     cwmp_event_global_init(cwmp);
 
-    if(cwmp->event_global.event_flag == EVENT_REBOOT_NONE_FLAG 
-		|| cwmp->event_global.event_flag == EVENT_REBOOT_BOOTSTRAP_FLAG)
-    {
-    	printf("bojianbin   %d\n",cwmp->event_global.event_flag);
-		cwmp->event_global.event_flag = EVENT_REBOOT_BOOTSTRAP_FLAG;    
-		cwmp_event_set_value(cwmp, INFORM_BOOTSTRAP, 1, NULL, 0, 0, 0);
-    }    
-    else    //reboot
-    {
-        cwmp_log_info("reboot_flag=%d, key=%s\n", cwmp->event_global.event_flag,
+    cwmp_log_info("reboot_flag=%d, key=%s\n", cwmp->event_global.event_flag,
                                                                cwmp->event_global.event_key);
 
+	/*no event file or bootstrap*/
+	if(cwmp->event_global.event_flag == EVENT_REBOOT_BOOTSTRAP_FLAG)
+    {   
+		cwmp_event_set_value(cwmp, INFORM_BOOTSTRAP, 1, NULL, 0, 0, 0);
+    }
+	
+	if(cwmp->event_global.event_flag & EVENT_REBOOT_NONE_FLAG)
+	{
 		cwmp_event_set_value(cwmp, INFORM_BOOT, 1, NULL, 0, 0, 0);
-        if(cwmp->event_global.event_flag & EVENT_REBOOT_ACS_FLAG)
-        {
-	    	cwmp_event_set_value(cwmp, INFORM_MREBOOT, 1, NULL, 0, 0, 0);
-    	}
+	}
+	
+    if(cwmp->event_global.event_flag & EVENT_REBOOT_ACS_FLAG)
+    {
+		cwmp_event_set_value(cwmp, INFORM_MREBOOT, 1, NULL, 0, 0, 0);
     }
 
-    //upgrade firmware
+    /*upgrade firmware*/
  
     if(cwmp->event_global.event_flag & EVENT_REBOOT_TRANSFERCOMPLETE_FLAG)
     {
         cwmp_event_set_value(cwmp, INFORM_MDOWNLOAD, 1, NULL, 0, 0, 0);
         cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1, cwmp->event_global.event_key, cwmp->event_global.fault_code, cwmp->event_global.start, cwmp->event_global.end);
     }
-
+	
+	/*restore to */
+	cwmp->event_global.event_flag = EVENT_REBOOT_NONE_FLAG; 
+	cwmp_event_file_save(cwmp);
     
     return CWMP_OK;
 }
@@ -438,8 +441,6 @@ size_t cwmp_write_callback(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 
-
-//清除掉相关的信息
 int cwmp_event_clear_active(cwmp_t *cwmp)
 {
     int     i;
@@ -506,34 +507,6 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
     cwmp->el->count = 0;
     pthread_mutex_unlock(&cwmp->event_mutex);
 
-    //清除Value Change
-    /*
-    if(notify_flag == 1)
-    {
-        hash_index_t    *hi = NULL;
-        val_change_t    *tmp = NULL;
-        char            *key = NULL;
-        
-        for (hi = hash_first(cwmp->ht_val_change); hi; hi = hash_next(hi))
-        {
-            hash_this(hi, (const void**)(&key), NULL, (void**)&tmp);
-            if(!key || !tmp)
-            {
-                continue;
-            }
-
-            //从value change hash去除
-            hash_set(cwmp->ht_val_change, (void*)tmp->name, strlen(tmp->name), NULL);
-
-            //释放内存
-            if(tmp->value)
-            {
-                free_check(tmp->value);
-            }
-            free_check(tmp);
-        }
-    }
-    */
 
     return CWMP_OK;
 }

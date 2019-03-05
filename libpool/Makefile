@@ -12,7 +12,7 @@ LDFLAGS +=
 CFLAGS += -fPIC -I./include
 
 
-all:shared static   install
+all:shared static install
 
 shared:$(pool_SHARED) 
 static:$(pool_STATIC) 

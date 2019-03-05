@@ -27,7 +27,7 @@
 #ifndef __CWMP_AGENT_H__
 #define __CWMP_AGENT_H__
 
-
+void cwmp_agent_start_session(cwmp_t * cwmp);
 int cwmp_agent_analyse_session(cwmp_session_t * session);
 
 #endif

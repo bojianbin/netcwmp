@@ -546,6 +546,8 @@ int     cwmp_parse_setparametervalues_message(env_t * env ,   xmldoc_t * doc, pa
 int     cwmp_parse_reboot_message(env_t * env , xmldoc_t *doc, char ** key, fault_code_t *fault);
 int cwmp_parse_addobject_message(env_t * env , xmldoc_t *doc, parameter_node_t * root,  int * instances, int* status, fault_code_t *fault);
 int cwmp_parse_deleteobject_message(env_t * env , xmldoc_t *doc, parameter_node_t * root, int* status, fault_code_t *fault);
+int cwmp_parse_download_message(env_t * env , xmldoc_t *doc, download_arg_t ** pdlarg, fault_code_t *fault);
+int cwmp_parse_upload_message(env_t * env , xmldoc_t *doc, upload_arg_t ** pularg, fault_code_t *fault);
 
 xmlnode_t * cwmp_get_rpc_method_node(xmldoc_t *  doc);
 xmlnode_t * cwmp_get_header_node(xmldoc_t *  doc);

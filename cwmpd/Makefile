@@ -15,7 +15,7 @@ LDFLAGS += -lssl -lcrypto
 endif
 OBJ=$(filter-out $(FILTER_OUT),$(OBJ_s))
 
-all:target  install 
+all:target install
 
 %.o:%.c
 	@$(TARGET_CC) -o $@ -c $<  $(CFLAGS) 
@@ -28,9 +28,6 @@ target:$(OBJ)
 install:
 	@$(INSTALL_DIR) $(TOP_DIR)/build/bin
 	@$(CP) $(TARGET) $(TOP_DIR)/build/bin
-	@sudo $(CP) $(TOP_DIR)/conf/cwmp.conf /etc/
-	@sudo $(CP) $(TOP_DIR)/conf/device.xml /etc/
-	@sudo $(CP) $(TARGET) /usr/local/bin/
 	@$(call MESSAGE,"Finished!", $(TARGET))
 	
 clean:

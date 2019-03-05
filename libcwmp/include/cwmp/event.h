@@ -67,10 +67,10 @@ struct event_code_st
     int   	event;
     char *	code;
     char   	command_key[COMMAND_KEY_LEN+1];
-    int      	policy;     /* 0:Ê¼ÖÕ²»ÄÜ¶ªÆú£¬1:Ö±µ½ÖØÆô£¬¶ªÆú  2:²»ĞèÒªretry£¬¿ÉÒÔ¶ªÆú */
-    int      	have_key;   /* 0: Ã»ÓĞ 1:ÓĞ*/
-    int      	ref;        /*ÊÂ¼ş·¢ËÍ´ÎÊı*/
-    int      	fault_code;
+    int     policy;     /* 0:Ê¼ï¿½Õ²ï¿½ï¿½Ü¶ï¿½ï¿½ï¿½ï¿½ï¿½1:Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  2:ï¿½ï¿½ï¿½ï¿½Òªretryï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ */
+    int     have_key;   /* 0: Ã»ï¿½ï¿½ 1:ï¿½ï¿½*/
+    int     ref;        /*ï¿½Â¼ï¿½ï¿½ï¿½ï¿½Í´ï¿½ï¿½ï¿½*/
+    int     fault_code;
     time_t	start;
     time_t	end;	
 };
@@ -88,7 +88,7 @@ struct event_list_st
 
 typedef struct event_global_st
 {
-    int      	event_flag;        /*0 ÆäËûÔ­ÒòÖØÆô 1 rebootÃüÁîÖØÆô2ÓÉÓÚÉı¼¶µ¼ÖÂµÄÖØÆô*/
+    int      	event_flag;        /*0 ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1 rebootï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½*/
     char   	event_key[COMMAND_KEY_LEN+1]; /* command key */
     int      	fault_code;
     time_t	start;
@@ -98,7 +98,7 @@ typedef struct event_global_st
 
 
 typedef struct transfer_st{
-    int     type;   //0 ÎŞÓÃ 1 download 2 upload
+    int     type;   //0 ï¿½ï¿½ï¿½ï¿½ 1 download 2 upload
     char    commad_key[COMMAND_KEY_LEN+1];
     int      fault_code;
     time_t  start_tm;

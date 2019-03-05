@@ -58,6 +58,8 @@ event_code_t * cwmp_event_code_create(pool_t * pool )
 {
     event_code_t * ev;
     ev = PMALLOC(sizeof(event_code_t));
+    if(ev)
+        memset(ev,0,sizeof(event_code_t));
     //ev->event = 0;
     //ev->code = NULL;
     //memset(ev->command_key, 0 , COMMAND_KEY_LEN+1);
@@ -74,13 +76,15 @@ int cwmp_event_list_init(pool_t * pool, event_list_t * el)
 {
     //create event list
     int i, size;
+    
     size = el->size;
     for(i=0; i<size; i++)
     {
-	event_code_t * ec = cwmp_event_code_create(pool);
-	el->events[i] = ec;	
+	    event_code_t * ec = cwmp_event_code_create(pool);
+	    el->events[i] = ec;	
     }
-   el->count = 0;
+    el->count = 0;
+    
     return CWMP_OK;
 }
 
@@ -96,7 +100,6 @@ int cwmp_event_global_init(cwmp_t * cwmp)
     }
     memset(&cwmp->event_global, 0, sizeof(event_global_t));
     
-    //判断配置文件是否存在
     if(access(cwmp->event_filename, F_OK) == -1)
     {
     	cwmp_log_error("can not access event file\n");
@@ -120,7 +123,7 @@ int cwmp_event_global_init(cwmp_t * cwmp)
     return CWMP_OK;
 }
 
-//把事件信息写入文件中
+//锟斤拷锟铰硷拷锟斤拷息写锟斤拷锟侥硷拷锟斤拷
 int cwmp_event_file_save(cwmp_t * cwmp)
 {
     FILE    *fp = NULL;
@@ -150,7 +153,6 @@ int cwmp_event_file_save(cwmp_t * cwmp)
 
 
 
-//设备启动以后，一些事件需要上报
 int cwmp_event_init(cwmp_t *cwmp)
 {
     int     bootstrap_flag = 0;
@@ -206,7 +208,7 @@ int cwmp_event_init(cwmp_t *cwmp)
 }
 
 /*
-//设置某个事件的commandkey
+//锟斤拷锟斤拷某锟斤拷锟铰硷拷锟斤拷commandkey
 int cwmp_event_set_commandkey(cwmp_t *cwmp, const int event, const char *cmd_key, time_t start)
 {
     cwmp_log_debug( "cwmp_event_set_commandkey begin, event=%d\n", event);
@@ -260,9 +262,9 @@ int cwmp_event_set_value(cwmp_t *cwmp,  int event,   int value, const char * cmd
 
  
     int i;
-    int k=count;
+    int k = count;
 	
-    for(i=0; i<count; i++)
+    for( i = 0 ; i < count ; i++)
     {
 		event_code_t * ec = cwmp->el->events[i];
 		if(ec->event == event)
@@ -296,7 +298,7 @@ int cwmp_event_set_value(cwmp_t *cwmp,  int event,   int value, const char * cmd
 }
 
 /*
-//设置某个事件的值
+//锟斤拷锟斤拷某锟斤拷锟铰硷拷锟斤拷值
 int cwmp_event_set_value1(cwmp_t *cwmp,  int event,   int value)
 {
     cwmp_log_debug( "cwmp_event_set_value begin, event=%d, value=%d\n", event, value);
@@ -517,7 +519,7 @@ int cwmp_clear_global_event(cwmp_t *cwmp)
 
 	return cwmp_event_file_save(cwmp);
 }
-//取得active event以及count
+//取锟斤拷active event锟皆硷拷count
 /*
 static int get_active_event_list(cwmp_t *cwmp, event_list_t **pevent_list, int *pevt_count)
 {

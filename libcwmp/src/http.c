@@ -236,7 +236,7 @@ int http_socket_connect(http_socket_t * sock, int family, const char * host, int
 int http_socket_accept(http_socket_t *sock, http_socket_t ** news)
 {
     struct sockaddr addr;
-    size_t len;
+    socklen_t len;
     pool_t * pool;
     int rc, s;
     cwmp_log_debug("TRACE: socket_tcp_accept\n");

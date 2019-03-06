@@ -731,7 +731,7 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,ularg->cmdkey, faultcode, starttime, endtime);
-                    cwmp_event_set_value(cwmp, INFORM_MUPLOAD 1, NULL, faultcode, 0, 0);
+                    cwmp_event_set_value(cwmp, INFORM_MUPLOAD,1, NULL, faultcode, 0, 0);
 					
 		
 					cwmp_clone_upload_arg_free(ularg);

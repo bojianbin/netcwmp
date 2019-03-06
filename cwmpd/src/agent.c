@@ -190,6 +190,7 @@ int cwmp_agent_recv_response(cwmp_session_t * session)
     return cwmp_session_recv_response(session);
 }
 
+int cwmp_event_file_save(cwmp_t * cwmp);
 int cwmp_agent_analyse_session(cwmp_session_t * session)
 {
     pool_t * doctmppool  = NULL;
@@ -326,7 +327,8 @@ eventcheck:
 				ec.fault_code = cwmp->event_global.fault_code;
 				ec.start = cwmp->event_global.start;
 				ec.end = cwmp->event_global.end;
-				newdoc = cwmp_session_create_transfercomplete_message(session, &ec, doctmppool);	
+				newdoc = cwmp_session_create_transfercomplete_message(session, &ec, doctmppool);
+				cwmp_event_file_save(cwmp);
 
 			}
 			
@@ -649,15 +651,13 @@ int cwmp_agent_upload_file(upload_arg_t * ularg)
     FUNCTION_TRACE();
     char * fromfile;
 
-	if(strcpy(ularg->filetype, "1 Vendor Configuration File") == 0)
+	if(strstr(ularg->filetype, "Configuration") != NULL)
 	{
-		//根据实际情况, 修改这里的配置文件路径
 		
 		fromfile = "/tmp/mysystem.cfg";
 	}
-	else if(strcpy(ularg->filetype, "2 Vendor Log File") == 0)
+	else if(strstr(ularg->filetype, "Log") != NULL)
 	{
-		//根据实际情况, 修改这里的配置文件路径
 		fromfile = "/tmp/mysystem.log";
 	}
 	else
@@ -669,7 +669,7 @@ int cwmp_agent_upload_file(upload_arg_t * ularg)
 
     if(faultcode != CWMP_OK)
     {
-	faultcode = 9001;
+		faultcode = 9001;
     }
    
 
@@ -701,7 +701,7 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 			case TASK_DOWNLOAD_TAG:
 				{
 					download_arg_t * dlarg = (download_arg_t*)data;
-					//begin download file
+					
 					time_t starttime = time(NULL);
 					int faultcode = 0;
 
@@ -710,17 +710,20 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,dlarg->cmdkey, faultcode, starttime, endtime);
 
-					//cwmp_event_clear_active(cwmp);
+					cwmp_event_clear_active(cwmp);
+					cwmp_clone_download_arg_free(dlarg);
+
+					
 					//handle the event and reboot if any
 					
-					cwmp_clone_download_arg_free(dlarg);
+					
 				}
 				break;
 
 			case TASK_UPLOAD_TAG:
 				{
 					upload_arg_t * ularg = (upload_arg_t*)data;
-					//begin download file
+					
 					time_t starttime = time(NULL);
 					int faultcode = 0;
 		
@@ -732,11 +735,12 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 		
 					cwmp_clone_upload_arg_free(ularg);
 				}
+				exit(0);
 				break;
 
 			case TASK_REBOOT_TAG:
 				{
-					//begin reboot system
+					
 					cwmp_log_debug("reboot ...");
 					cwmp_event_set_value(cwmp, INFORM_MREBOOT, 1, NULL, 0, 0, 0);
 					cwmp_event_clear_active(cwmp);
@@ -746,11 +750,12 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 
 			case TASK_FACTORYRESET_TAG:
 				{
-					//begin factory reset system
 					cwmp_log_debug("factory reset ...");
+
+					if(cwmp->event_filename)
+						unlink(cwmp->event_filename);
 					
-					cwmp_event_clear_active(cwmp);
-					//system("factoryreset");
+					//handle system reset 
 				}
 				break;
 
@@ -819,7 +824,6 @@ void cwmp_agent_start_session(cwmp_t * cwmp)
 					{
 						cwmp_event_clear_active(cwmp);
 					}
-					cwmp_clear_global_event(cwmp);
 					
 					cwmp_log_debug("session stutus: INFORM2\n");
 	                if (cwmp->acs_auth)

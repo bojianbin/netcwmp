@@ -128,8 +128,57 @@ void convert_to_hex(const char *Bin, char *Hex)
     Hex[32] = '\0';
 }
 
+/*we assume localtime can get the local time correctly*/
+int to_iso8601_datetime(char *buf,int len,time_t time,int utc_format)
+{
+	struct tm *_time = NULL;
+	
+	if( !buf || len <= 0 )
+		return -1;
 
+	if(utc_format)
+	{
+		_time = gmtime(&time);
+		if(!_time)
+			return -1;
 
+		snprintf(buf,len - 1,"%d%02d%02dT%02d:%02d:%02dZ",
+			_time->tm_year + 1900,
+			_time->tm_mon + 1,
+			_time->tm_mday,
+			_time->tm_hour,
+			_time->tm_min,
+			_time->tm_sec);
+	}else
+	{
+		time_t utc_time = 0;
+		int time_zone_;
+		struct tm * p_tm_time = localtime( &utc_time );
+
+		//get time zone [-11 11]
+		if(!p_tm_time)
+			return -1;
+		time_zone_ = ( p_tm_time->tm_hour > 12 ) ?   ( p_tm_time->tm_hour-=  24 )  :  p_tm_time->tm_hour;
+
+		//generate time string
+		_time = localtime(&time);
+		if(!_time)
+			return -1;
+
+		snprintf(buf,len - 1,"%d%02d%02dT%02d:%02d:%02d%s%02d",
+			_time->tm_year + 1900,
+			_time->tm_mon + 1,
+			_time->tm_mday,
+			_time->tm_hour,
+			_time->tm_min,
+			_time->tm_sec,
+			time_zone_ >= 0 ? "+":"-",
+			time_zone_ < 0 ?(0 - time_zone_):time_zone_);
+		
+	}
+
+	return 0;
+}
 
 
 

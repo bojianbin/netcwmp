@@ -2612,9 +2612,13 @@ xmldoc_t * cwmp_create_transfercomplete_message(env_t * env ,  header_t * header
     xmlnode_t * headerNode;
     xmlnode_t * node;
 
-        xmlnode_t * faultStructNode;
-        xmlnode_t * faultCode;
-        xmlnode_t * faultString;
+    xmlnode_t * faultStructNode;
+    xmlnode_t * faultCode;
+    xmlnode_t * faultString;
+
+	char start_time[64] = {0};
+	char end_time[64] = {0};
+	int ret = 0;
 
     xmldoc_t * doc = XmlDocCreateDocument(env->pool );
     envelopeNode    = cwmp_create_envelope_node(env ,  & doc->node);
@@ -2637,9 +2641,16 @@ xmldoc_t * cwmp_create_transfercomplete_message(env_t * env ,  header_t * header
 
     }
 
-    ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "StartTime", NULL));
-    ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "CompleteTime", NULL));
-
+	ret = to_iso8601_datetime(start_time, 64, evcode->start, 1);
+	ret += to_iso8601_datetime(end_time, 64, evcode->end, 1);
+	if(ret != 0)
+	{
+		ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "StartTime", NULL));
+    	ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "CompleteTime", NULL));
+	}else{
+    	ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "StartTime", start_time));
+    	ESA(node, cwmp_xml_create_child_node(env ,  rpcNode, NULL, "CompleteTime", end_time));
+	}
 
     return doc;
 }

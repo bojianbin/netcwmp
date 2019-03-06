@@ -1215,7 +1215,7 @@ int http_read_response(http_socket_t * sock, http_response_t * response, pool_t 
     http_set_variable(response->parser, HTTPP_VAR_ERROR_CODE, resp_code, pool);
     code = TRatoi(resp_code);
     response->status = code;
-    if (code < 200 || code >= 300)
+    if ((code < 200 || code >= 300) && code != 100)
     {
         http_set_variable(response->parser, HTTPP_VAR_ERROR_MESSAGE, message, pool);
     }
@@ -1247,13 +1247,13 @@ char * http_method(int method)
 {
     switch (method)
     {
-    case HTTP_POST:
-        return "POST";
-    case HTTP_PUT:
-        return "PUT";
-    default:
+	    case HTTP_POST:
+	        return "POST";
+	    case HTTP_PUT:
+	        return "PUT";
+	    default:
 
-        return "GET";
+	        return "GET";
 
     };
 
@@ -1622,7 +1622,7 @@ int http_send_file_request(http_socket_t * sock , http_request_t * request, cons
     FILE *tf = fopen(fromfile, "rb");
     if(!tf)
     {
-	return CWMP_ERROR;
+		return CWMP_ERROR;
     }
 
 	
@@ -1633,7 +1633,6 @@ int http_send_file_request(http_socket_t * sock , http_request_t * request, cons
                     dest->uri,
                     dest->host,
                     dest->port,
-                    "CPE Netcwmp Agent",
                     len2);
 
     len1 += TRsnprintf(buffer + len1, HTTP_DEFAULT_LEN - len1, "\r\n");
@@ -1642,17 +1641,18 @@ int http_send_file_request(http_socket_t * sock , http_request_t * request, cons
 
     http_socket_write(sock, buffer, (int)len1);
 
-   http_response_t * response;
-   http_response_create(&response, pool);
+   	http_response_t * response;
+   	http_response_create(&response, pool);
 
     int rc = http_read_response(sock, response, pool);
+	
     if(rc != HTTP_100)
     {
-	if(tf != NULL)
-	{
-		fclose(tf);
-	}
-	return CWMP_ERROR;
+		if(tf != NULL)
+		{
+			fclose(tf);
+		}
+		return CWMP_ERROR;
     }
 
 
@@ -1660,22 +1660,24 @@ int http_send_file_request(http_socket_t * sock , http_request_t * request, cons
 
     while(1)
     {
-	len2 = fread(buffer, HTTP_DEFAULT_LEN, 1, tf);
-	if(len2 <= 0)
-	{
-		break;
-	}
-	len2 = http_socket_write(sock, buffer, (int)len2);
-	if(len2 <= 0)
-	{
-		break;
-	}
-	totallen += len2;
+		len2 = fread(buffer, 1,HTTP_DEFAULT_LEN, tf);
+		if(len2 <= 0)
+		{
+			break;
+		}
+		
+		len2 = http_socket_write(sock, buffer, (int)len2);
+		if(len2 <= 0)
+		{
+			break;
+		}
+		
+		totallen += len2;
     }
 
     if(tf != NULL)
     {
-	fclose(tf);
+		fclose(tf);
     }
 
     return totallen;
@@ -1695,35 +1697,35 @@ int http_send_file(const char * fromfile, const char *tourl )
 	pool = pool_create(POOL_DEFAULT_SIZE);
 	http_dest_create(&dest, tourl, pool);
    
-        int rc = http_socket_create(&sock, AF_INET, SOCK_STREAM, 0, pool);
-        if (rc != CWMP_OK)
-        {
-            cwmp_log_error("http send file: create socket error.");
-            goto out;
-        }
+    int rc = http_socket_create(&sock, AF_INET, SOCK_STREAM, 0, pool);
+    if (rc != CWMP_OK)
+    {
+        cwmp_log_error("http send file: create socket error.");
+        goto out;
+    }
 
-        rc = http_socket_connect(sock, AF_INET, dest->host, dest->port);
-        if(rc != CWMP_OK)
-        {
-            cwmp_log_error("connect to host faild. Host is %s:%d.", dest->host, dest->port);
-            goto out;
-        }
+    rc = http_socket_connect(sock, AF_INET, dest->host, dest->port);
+    if(rc != CWMP_OK)
+    {
+        cwmp_log_error("connect to host faild. Host is %s:%d.", dest->host, dest->port);
+        goto out;
+    }
 
-        http_socket_set_recvtimeout(sock, 30);
+    http_socket_set_recvtimeout(sock, 30);
 
 	http_request_create(&request, pool);
 	request->dest = dest;
-        request->method = HTTP_PUT;
+    request->method = HTTP_PUT;
 		
 	rc = http_send_file_request(sock, request, fromfile, pool);
-        if(rc <= 0)
-        {
-            cwmp_log_error("http get host faild. Host is %s:%d.", dest->host, dest->port);
-            goto out;
-        }
+    if(rc <= 0)
+    {
+        cwmp_log_error("http get host faild. Host is %s:%d.", dest->host, dest->port);
+        goto out;
+    }
 
 
-        http_response_create(&response, pool);
+    http_response_create(&response, pool);
 
 	rc = http_read_response(sock, response, pool);
 

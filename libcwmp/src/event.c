@@ -123,7 +123,6 @@ int cwmp_event_global_init(cwmp_t * cwmp)
     return CWMP_OK;
 }
 
-//���¼���Ϣд���ļ���
 int cwmp_event_file_save(cwmp_t * cwmp)
 {
     FILE    *fp = NULL;
@@ -199,10 +198,6 @@ int cwmp_event_init(cwmp_t *cwmp)
         cwmp_event_set_value(cwmp, INFORM_MDOWNLOAD, 1, NULL, 0, 0, 0);
         cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1, cwmp->event_global.event_key, cwmp->event_global.fault_code, cwmp->event_global.start, cwmp->event_global.end);
     }
-	
-	/*restore to */
-	cwmp->event_global.event_flag = EVENT_REBOOT_NONE_FLAG; 
-	cwmp_event_file_save(cwmp);
     
     return CWMP_OK;
 }
@@ -447,9 +442,7 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
 {
     int     i;
     int     j;
-    int     notify_flag = 0;
 
-     
 	
     assert(cwmp != NULL);	
   
@@ -469,22 +462,19 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
 		switch(pec[i]->event)
 		{
 			case INFORM_BOOTSTRAP:
-		 
-				cwmp->event_global.event_flag |=  EVENT_REBOOT_ACS_FLAG;
-	        	cwmp_event_file_save(cwmp);
-		        
+				if( cwmp->event_global.event_flag != EVENT_REBOOT_BOOTSTRAP_FLAG )
+				{
+					cwmp->event_global.event_flag = EVENT_REBOOT_BOOTSTRAP_FLAG;
+	            	cwmp_event_file_save(cwmp);
+				}
+				
 				break;
-
 			case INFORM_MREBOOT:
-				cwmp->event_global.event_flag |= EVENT_REBOOT_ACS_FLAG;
-
-	            cwmp_event_file_save(cwmp);
-
-				break;
-
-			case INFORM_VALUECHANGE:
-				notify_flag = 1;
-
+				if( !(cwmp->event_global.event_flag & EVENT_REBOOT_ACS_FLAG) )
+				{
+					cwmp->event_global.event_flag |= EVENT_REBOOT_ACS_FLAG;
+	            	cwmp_event_file_save(cwmp);
+				}
 				break;
 
 			case INFORM_TRANSFERCOMPLETE:
@@ -498,6 +488,13 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
 		        
 				cwmp_event_file_save(cwmp);
 				break;
+
+			default:
+				if(! (cwmp->event_global.event_flag & EVENT_REBOOT_NONE_FLAG) )
+				{
+					cwmp->event_global.event_flag |= EVENT_REBOOT_NONE_FLAG;
+					cwmp_event_file_save(cwmp);
+				}
 				
 		}
 
@@ -515,57 +512,9 @@ int cwmp_event_clear_active(cwmp_t *cwmp)
 
 int cwmp_clear_global_event(cwmp_t *cwmp)
 {
-	cwmp->event_global.event_flag = EVENT_REBOOT_ACS_FLAG;
+	cwmp->event_global.event_flag = EVENT_REBOOT_NONE_FLAG;
 
 	return cwmp_event_file_save(cwmp);
 }
-//ȡ��active event�Լ�count
-/*
-static int get_active_event_list(cwmp_t *cwmp, event_list_t **pevent_list, int *pevt_count)
-{
-    int             i;
-    event_list_t    *evlist = NULL;
-    int             count = 0;
-    int             ret = CWMP_OK;
-    
-    if(!cwmp || !pevent_list || !pevt_count)
-    {
-        cwmp_log_error( "param is NULL\n");
-        return CWMP_ERROR;
-    }
-
-    pthread_mutex_lock(&cwmp->event_mutex);
-    int max = cwmp->event_list->count;
-    for(i=0; max; i++)
-    {
-        if(cwmp->event_info[i].ref > 0)
-        {            
-            evlist = realloc(evlist, sizeof(event_t)*(count+1));
-            if(!evlist)
-            {
-                ret = CWMP_ERROR;
-                cwmp_log_error( "realloc fail\n");
-                break;
-            }
-            memcpy(&evlist[count], &cwmp->event_info[i], sizeof(event_list_t));
-            count++;
-        }
-    }
-    pthread_mutex_unlock(&cwmp->event_mutex);
-
-    if(ret == CWMP_OK)
-    {
-        *pevent_list = evlist;
-        *pevt_count = count;
-    }
-    else
-    {
-        free(evlist);
-    }
-
-    return ret;
-}
-
-*/
 
 

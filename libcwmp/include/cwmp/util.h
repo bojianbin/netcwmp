@@ -37,6 +37,8 @@
 #endif
 
 void MD5(char *buf, ...);
+int to_iso8601_datetime(char *buf,int len,time_t time,int utc_format);
+
 
 
 static INLINE unsigned int TRstrcmp(const char * str, const char * dst)

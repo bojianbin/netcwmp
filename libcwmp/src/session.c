@@ -794,10 +794,6 @@ xmldoc_t *  cwmp_session_create_inform_message(cwmp_session_t * session, event_l
     parameter_list_t * pl;
 
 
-
-
-
-
     FUNCTION_TRACE();
 
 
@@ -991,6 +987,7 @@ xmldoc_t *  cwmp_session_create_upload_response_message(cwmp_session_t * session
     int rv;
     char * key;
     fault_code_t fault;
+
     FUNCTION_TRACE();
     rv = cwmp_parse_header_node(cwmp_get_header_node(doc), &header, pool);
     if (rv != CWMP_OK)
@@ -1002,17 +999,21 @@ xmldoc_t *  cwmp_session_create_upload_response_message(cwmp_session_t * session
 
     rv = cwmp_parse_upload_message(session->env, doc, &uparg, &fault);
 
-   if(rv == CWMP_OK)
+    if(rv == CWMP_OK)
     {
-	upload_arg_t * newularg = cwmp_clone_upload_arg(uparg);
-	if(newularg)
-	{
-		cwmp_t * cwmp = session->cwmp;
-		queue_push(cwmp->queue, newularg, TASK_UPLOAD_TAG);
-		cwmp_log_debug("push new upload task to queue! url: %s ", newularg->url);
-	}
+        upload_arg_t * newularg = cwmp_clone_upload_arg(uparg);
+        if(newularg)
+        {
+            cwmp_t * cwmp = session->cwmp;
+            queue_push(cwmp->queue, newularg, TASK_UPLOAD_TAG);
+            cwmp_log_debug("push new upload task to queue! url: %s ", newularg->url);
+        }
     }
 
+    /*
+    * 0 = Upload has completed.
+    * 1 = Upload has not yet completed (for example, if the upload needs to wait until after the Session has been terminated).
+    */
     int status = 1;
     return cwmp_create_upload_response_message(session->env, header, status);
 

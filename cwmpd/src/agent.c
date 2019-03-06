@@ -122,7 +122,7 @@ int cwmp_agent_create_datetimes(datatime_t *nowtime)
 
 
 
-//È¡µÃactive eventÒÔ¼°count
+//È¡ï¿½ï¿½active eventï¿½Ô¼ï¿½count
 int cwmp_agent_get_active_event(cwmp_t *cwmp, cwmp_session_t * session,  event_list_t **pevent_list)
 {
     event_list_t * el;
@@ -557,13 +557,13 @@ int cwmp_agent_upload_file(upload_arg_t * ularg)
 	int rc;
 	if(strcmp(ularg->filetype, "1 Vendor Configuration File") == 0)
 	{
-		//¸ù¾ÝÊµ¼ÊÇé¿ö, ÐÞ¸ÄÕâÀïµÄÅäÖÃÎÄ¼þÂ·¾¶
+		//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 		
 		uf = fopen("/tmp/mysystem.cfg", "rb");		
 	}
 	else if(strcmp(ularg->filetype, "2 Vendor Log File") == 0)
 	{
-		//¸ù¾ÝÊµ¼ÊÇé¿ö, ÐÞ¸ÄÕâÀïµÄÅäÖÃÎÄ¼þÂ·¾¶
+		//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 		uf = fopen("/tmp/mysystem.log", "rb");	
 	}
 	else
@@ -731,11 +731,12 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,ularg->cmdkey, faultcode, starttime, endtime);
+                    cwmp_event_set_value(cwmp, INFORM_MUPLOAD 1, NULL, faultcode, 0, 0);
 					
 		
 					cwmp_clone_upload_arg_free(ularg);
 				}
-				exit(0);
+				
 				break;
 
 			case TASK_REBOOT_TAG:

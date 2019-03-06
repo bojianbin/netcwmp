@@ -1186,7 +1186,7 @@ int cwmp_parse_header_node(xmlnode_t * node, header_t ** header, pool_t * pool)
         (*header) = pool_pcalloc(pool, sizeof(header_t));
         cwmpIdNode = cwmp_xml_get_child_with_name(node, CWMP_XML_HEADER_ID);
         cwmpHoldRequestsNode = cwmp_xml_get_child_with_name(node, CWMP_XML_HEADER_HOLDREQUESTS);
-	cwmpNoMoreRequestsNode = cwmp_xml_get_child_with_name(node, CWMP_XML_HEADER_NOMOREREQUESTS);
+	    cwmpNoMoreRequestsNode = cwmp_xml_get_child_with_name(node, CWMP_XML_HEADER_NOMOREREQUESTS);
         if (cwmpIdNode == NULL || cwmpHoldRequestsNode == NULL || cwmpNoMoreRequestsNode == NULL)
         {
             cwmp_log_debug("TR069Header cwmp:ID=%s, cwmp:HoldRequests=%s, cwmp:NoMoreRequests=%s",

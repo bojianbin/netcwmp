@@ -4,6 +4,7 @@
 #include "cwmp/http.h"
 #include "cwmp/log.h"
 #include "cwmp/cwmp_private.h"
+#include "cJSON.h"
 
 //1  len
 size_t print_data(char *data, size_t size, size_t nmemb, void * calldata)
@@ -13,7 +14,20 @@ size_t print_data(char *data, size_t size, size_t nmemb, void * calldata)
 	
 	return 0;
 }
+int test_json()
+{	
+	char *str = "{\"enable\": 1 , \"name\":\"bojianbin\"}";
+	cJSON * root = cJSON_Parse(str);
+	cJSON * node = cJSON_GetObjectItem(root,"enable");
+	printf("enable:%s\n",node->valuestring);
+	printf("enable:%d\n",node->valueint);
 
+	node = cJSON_GetObjectItem(root,"name");
+	printf("name:%s\n",node->valuestring);
+
+
+	return 0;
+}
 int test_wan(int argc , char *argv[])
 {
 	int ret = 0 ;
@@ -85,7 +99,7 @@ END:
 int main(int argc , char * argv[])
 {
 
-	test_wan(argc,argv);
+
 
 	return 0;
 }

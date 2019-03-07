@@ -13,7 +13,7 @@
 #include <cwmp/pool.h>
 #include <cwmp/log.h>
 #include <cwmp/cfg.h>
-#include <ini.h>
+#include <cwmp/ini.h>
 
 
 typedef struct conf_t conf_t;

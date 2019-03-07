@@ -149,7 +149,7 @@ int http_parse_digest_auth(const char * auth, http_digest_auth_t * digest_auth);
 int http_parse_cookie(const char * cookie, char * dest_cookie);
 int http_socket_set_writefunction(http_socket_t * sock, http_write_callback_pt callback, void * calldata);
 
-
+int http_get(http_socket_t * sock, http_request_t * request, cwmp_chunk_t * data, pool_t * pool);
 int http_post(http_socket_t * sock, http_request_t * request, cwmp_chunk_t * data, pool_t * pool);
 int http_receive_file(const char *fromurl, const char * tofile);
 int http_send_file(const char * fromfile, const char *tourl );

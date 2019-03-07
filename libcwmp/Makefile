@@ -13,7 +13,7 @@ ifeq ($(findstring DUSE_CWMP_OPENSSL,DEFS),DUSE_CWMP_OPENSSL)
 LDFLAGS += -lssl
 endif
 
-CFLAGS += -fPIC -I./include -Isrc/inc $(DEFS)
+CFLAGS += -fPIC -I./include $(DEFS)
 
 
 all:shared static install

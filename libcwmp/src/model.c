@@ -1,7 +1,7 @@
 #include "cwmp/model.h"
 #include "cwmp/xmlet.h"
 #include "cwmp/log.h"
-#include "cwmp_private.h"
+#include "cwmp/cwmp_private.h"
 
 
 

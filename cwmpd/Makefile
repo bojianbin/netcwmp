@@ -9,7 +9,7 @@ FILTER_OUT =
 OBJ_s = $(patsubst %.c,%.o,$(wildcard src/*.c))
 OBJ_s += $(patsubst %.c,%.o,$(wildcard src/modules/*.c))
 CFLAGS += -Iinclude/ -Isrc/modules $(DEFS)
-LDFLAGS +=  -l:libpool.a -l:libxmlet.a -l:libcwmp.a -lpthread
+LDFLAGS +=  -l:libpool.a -l:libxmlet.a -l:libcwmp.a -l:libcjson.a -lpthread
 ifeq ($(findstring USE_CWMP_OPENSSL,$(DEFS)),USE_CWMP_OPENSSL)
 LDFLAGS += -lssl -lcrypto
 endif

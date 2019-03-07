@@ -1,7 +1,12 @@
 PKG_SUBDIRS +=libpool
 PKG_SUBDIRS +=libxmlet
 PKG_SUBDIRS +=libcwmp
+PKG_SUBDIRS +=libcJSON
+PKG_SUBDIRS +=libnetool
+
 PKG_SUBDIRS +=cwmpd
+PKG_SUBDIRS +=test_http
+
 
 include default.mk
 

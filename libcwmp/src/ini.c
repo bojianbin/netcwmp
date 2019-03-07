@@ -8,7 +8,7 @@
 # endif
 #endif
 
-#include "ini.h"
+#include "cwmp/ini.h"
 #if defined NDEBUG
 #define assert(e)
 #else

@@ -1,7 +1,7 @@
  
 #include "cwmp/http.h"
 #include "cwmp/log.h"
-#include "cwmp_private.h"
+#include "cwmp/cwmp_private.h"
 #include <cwmp/md5.h>
 
 

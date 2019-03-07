@@ -12,7 +12,7 @@
 #include "cwmp/util.h"
 #include "cwmp/memory.h"
 #include "cwmp/log.h"
-#include "cwmp_private.h"
+#include "cwmp/cwmp_private.h"
 
 void  cwmp_buffer_clear(void * data)
 {

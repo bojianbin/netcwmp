@@ -8,10 +8,11 @@
  * Email: netcwmp ( & ) gmail dot com                                *
  *                                                                      *
  ***********************************************************************/
- 
+#include <limits.h>
+
 #include "cwmp/http.h"
 #include "cwmp/log.h"
-#include "cwmp_private.h"
+#include "cwmp/cwmp_private.h"
 #include <cwmp/md5.h>
 
 
@@ -485,9 +486,7 @@ int http_parse_url(http_dest_t * dest, const char * url)
     const char * uri;
     int i;
 
-    /* allocate struct url */
-    //char urlbuf[1024] = {0};
-    //strncpy(urlbuf, url, strlen(url));
+
     FUNCTION_TRACE();
     uri = url;
     /* scheme name */
@@ -505,6 +504,7 @@ int http_parse_url(http_dest_t * dest, const char * url)
     }
     else
     {
+    	snprintf(dest->scheme,URL_SCHEME_LEN+1,"http");
         p = uri;
     }
     if (!*uri || *uri == '/' || *uri == '.')
@@ -780,7 +780,7 @@ int http_read_header(http_socket_t * sock, cwmp_chunk_t * header, pool_t * pool)
 
 
 
-int http_read_body(http_socket_t * sock, int max)//, cwmp_chunk_t * body, pool_t * pool)
+int http_read_body(http_socket_t * sock, int max)
 {
     int bytes = 0;
     int len;
@@ -796,7 +796,6 @@ int http_read_body(http_socket_t * sock, int max)//, cwmp_chunk_t * body, pool_t
         }
         if (len <= 0)
         {
-            //*body = 0;
             if (len == 0)
             {
                 return bytes;
@@ -804,8 +803,7 @@ int http_read_body(http_socket_t * sock, int max)//, cwmp_chunk_t * body, pool_t
             return -1;
         }
 
-        //memcpy(b, buffer, len);
-
+       
         if(sock->write_callback)
         {
             (*sock->write_callback)(buffer, 1, len, sock->write_calldata);
@@ -1229,9 +1227,15 @@ int http_read_response(http_socket_t * sock, http_response_t * response, pool_t 
     cont_len = 0;
     if (ctxlen)
     {
+    	cwmp_log_debug("http read body length: %d", cont_len);
         cont_len = TRatoi(ctxlen);
+    }else
+    {
+    	cwmp_log_alert("We can not find \"Content-Length\" ,so we just wait until SO_RCVTIMEO if any or server close");
+		cont_len = INT_MAX;
     }
-    rc = http_read_body(sock, cont_len);//, &body, pool);
+	
+    rc = http_read_body(sock, cont_len);
     if (rc < 0 || code != 200)
     {
         cwmp_log_info("Http read response code is (%d)\n", code);        

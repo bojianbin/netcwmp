@@ -14,7 +14,7 @@
 #include "cwmp/cfg.h"
 #include "cwmp/log.h"
 #include "cwmp/cwmp.h"
-#include "cwmp_private.h"
+#include "cwmp/cwmp_private.h"
 
 
 

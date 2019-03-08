@@ -124,6 +124,7 @@ xmldoc_t *  cwmp_session_create_transfercomplete_message(cwmp_session_t * sessio
 xmldoc_t *  cwmp_session_create_factoryreset_response_message(cwmp_session_t * session, xmldoc_t * doc, pool_t * pool);
 
 
-int cwmp_session_get_localip(char *hostip);
+int cwmp_session_get_localip(char *hostip,char *mac,char *interface_name);
+
 
 #endif

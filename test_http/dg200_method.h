@@ -5,6 +5,12 @@
 #define DG_SHORT_STRING_LEN 32
 #define DG_MEDIUM_STRING_LEN 128
 
+typedef struct dg_outcome_s
+{
+	int nRet;
+	char Message[DG_MEDIUM_STRING_LEN];
+}dg_outcom_t;
+
 typedef struct dg_wan_config_s
 {
 	int enable_dhcp;
@@ -49,11 +55,26 @@ typedef struct dg_global_config_s
 
 }dg_global_config_t;
 
+typedef struct dg_para_file_get_s
+{
+	char file_path[DG_MEDIUM_STRING_LEN];
+	
+}dg_para_file_get_t;
+
 struct buffer_atom;
 typedef int (*dg_get_func)(struct buffer_atom* ,void * );
 
 int dg_get_wan_config(dg_wan_config_t * _config);
+int dg_set_wan_config(dg_wan_config_t * _config);
 int dg_get_global_config(dg_global_config_t * _config);
+int dg_get_para_file();
+int dg_set_para_file(const char * file_full_name);
+
+
+int dg_reset_system();
+int dg_reboot_system();
+int dg_upgrade_system(const char * file_full_name);
+
 
 #endif
 

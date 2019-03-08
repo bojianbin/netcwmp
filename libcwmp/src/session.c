@@ -163,26 +163,26 @@ int cwmp_data_sprintf_parameter_name(char * buffer, const char * format, ...)
 
 char * cwmp_data_get_parameter_value(cwmp_t * cwmp, parameter_node_t * root, const char * name, pool_t * pool)
 {
-    parameter_node_t * node;
-    char * value = NULL;
-    int rc;
+	parameter_node_t * node;
+	char * value = NULL;
+	int rc;
 
 
-    node = cwmp_get_parameter_node(root, name);
-    if (!node)
-        return NULL;
+	node = cwmp_get_parameter_node(root, name);
+	if (!node)
+	return NULL;
 
 
-     rc = cwmp_get_parameter_node_value(cwmp, node, name, &value, pool);
-     if(rc == 0)
-     {
-	return value;
-     }
+	rc = cwmp_get_parameter_node_value(cwmp, node, name, &value, pool);
+	if(rc == 0)
+	{
+		return value;
+	}
 
-     else
-     {
-	return node->value;
-     }
+	else
+	{
+		return node->value;
+	}
 
 }
 
@@ -210,30 +210,9 @@ char * cwmp_session_get_sequence(pool_t * pool)
     return g_cwmp_session_sequence_buffer;
 }
 
-int cwmp_session_get_localip(char *hostip)
+int cwmp_session_get_localip(char *hostip,char *mac,char *interface_name)//eth0 for example
 {
 #ifdef WIN32
-    /*    struct sockaddr addr;
-    	SOCKET fd;
-    	char local_ip_addr[20] = {0};
-    	int len = sizeof(addr);
-        ZeroMemory( &addr, sizeof(addr) );
-
-
-    	if(!hostip)
-                return -1;
-
-    	if((fd=socket(AF_INET,SOCK_DGRAM,0))>=0)
-        {
-    		if( getsockname( fd, &addr, &len ) )
-    		{
-    			len = WSAGetLastError();
-    		}
-
-    		TRsnprintf(local_ip_addr, 20, "%s", inet_ntoa( ((struct sockaddr_in*)&addr)->sin_addr ));
-    		TRstrcpy(hostip, local_ip_addr);
-    	}
-    */
 
     char hostname[256];
 
@@ -251,10 +230,6 @@ int cwmp_session_get_localip(char *hostip)
         return -1;
     }
     cwmp_log_debug("hostname=%s\n", hostname);
-    ////////////////
-    // ������������ȡ������Ϣ.
-    //
-
 
     pHostent = gethostbyname(hostname);
 
@@ -264,10 +239,6 @@ int cwmp_session_get_localip(char *hostip)
         cwmp_log_error("Error: %u\n", WSAGetLastError());
         return -1;
     }
-    //////////////////
-    // ���򷵻ص�hostent��Ϣ.
-    //
-
     he = *pHostent;
 
 
@@ -278,80 +249,54 @@ int cwmp_session_get_localip(char *hostip)
     for (i=0; he.h_addr_list[i]; i++)
     {
         memcpy ( &sa.sin_addr.s_addr, he.h_addr_list[i],he.h_length);
-        // ����������IP��ַ.
         cwmp_log_debug("Address: %s\n", inet_ntoa(sa.sin_addr)); // ��ʾ��ַ��
         TRsnprintf(hostip, 20, "%s", inet_ntoa(sa.sin_addr));
         break;
     }
-
-
-
-
-
-
 #else
-    register int fd,intrface,retn=0;
-    struct ifreq buf[32];
-    struct ifconf ifc;
-    char domain_host[100] = {0};
-    char local_ip_addr[20] = {0};
-    char local_mac[20] = {0};
-    //Get Domain Name --------------------------------------------------
-    if (!hostip)
-        return -1;
-    if (getdomainname(&domain_host[0], 100) != 0)
-    {
-        return -1;
-    }
-    //------------------------------------------------------------------
-    //Get IP Address & Mac Address ----------------------------------------
-    if ((fd=socket(AF_INET,SOCK_DGRAM,0))>=0)
-    {
-        ifc.ifc_len=sizeof buf;
-        ifc.ifc_buf=(caddr_t)buf;
-        if (!ioctl(fd,SIOCGIFCONF,(char*)&ifc))
-        {
-            intrface=ifc.ifc_len/sizeof(struct ifreq);
-            while (intrface-->0)
-            {
-                if (!(ioctl(fd,SIOCGIFFLAGS,(char*)&buf[intrface])))
-                {
-                    if (buf[intrface].ifr_flags&IFF_PROMISC)
-                    {
-                        retn++;
-                    }
-                }
-                //Get IP Address
-                if (!(ioctl(fd,SIOCGIFADDR,(char*)&buf[intrface])))
-                {
-                    sprintf(local_ip_addr, "%s", inet_ntoa(((struct sockaddr_in*)(&buf[intrface].ifr_addr))->sin_addr));
-                }
-                //Get Hardware Address
-#if 0
-                if (!(ioctl(fd,SIOCGIFHWADDR,(char*)&buf[intrface])))
-                {
+	int sockfd;      
+    struct ifreq req;     
+    struct sockaddr_in *host;  
 
+	if(hostip == NULL && mac == NULL)
+		return -1;
 
-		    sprintf(local_mac,"%02x:%02x:%02x:%02x:%02x:%02x",
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[0],
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[1],
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[2],
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[3],
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[4],
-                            (unsigned char)buf[intrface].ifr_hwaddr.sa_data[5]);
+	/*Get ip*/
+    if(-1 == (sockfd = socket(PF_INET, SOCK_STREAM, 0)))   
+    {   
+        perror( "socket" );     
+        return -1;   
+    }   
+   
+    bzero(&req, sizeof(struct ifreq));     
+    strcpy(req.ifr_name, interface_name?interface_name:"eth0");     
+    ioctl(sockfd, SIOCGIFADDR, &req);    
+    host = (struct sockaddr_in*)&req.ifr_addr; 
+	if(hostip)
+    	strcpy(hostip, inet_ntoa(host->sin_addr));     
+    close(sockfd);
 
-                    break;
-                }
-#endif
-            }//While
-        }
-    }
-    if ( fd > 0 )
-    {
-        close(fd);
-    }
+	/*Get mac*/
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	req.ifr_addr.sa_family = AF_INET;
 
-    strcpy(hostip, local_ip_addr);
+	strcpy(req.ifr_name, interface_name?interface_name:"eth0");
+
+	ioctl(sockfd, SIOCGIFHWADDR, &req);
+
+	close(sockfd);
+
+	if(mac)
+		sprintf(mac, "%.2x%.2x%.2x%.2x%.2x%.2x", 
+			(unsigned char)req.ifr_hwaddr.sa_data[0],
+			(unsigned char)req.ifr_hwaddr.sa_data[1],
+			(unsigned char)req.ifr_hwaddr.sa_data[2],
+			(unsigned char)req.ifr_hwaddr.sa_data[3],
+			(unsigned char)req.ifr_hwaddr.sa_data[4],
+			(unsigned char)req.ifr_hwaddr.sa_data[5]);
+	
+    return 0;    
+
 #endif
 
     return CWMP_OK;

@@ -230,15 +230,6 @@ int cwmp_chunk_create(cwmp_chunk_t ** news, pool_t * pool)
     (*news)->current = NULL;
     (*news)->bytes = (*news)->count = (*news)->used = 0;
 
-    /*
-       if (cwmp_buffer_create(&buffer, pool) != CWMP_OK)
-       {
-       cwmp_log_error("create buffer out of memory\n");
-       PFREE(*news);
-       return CWMP_ENOMEM;
-       }
-       (*news)->buffer = (*news)->current = buffer;
-       */
 
     pool_cleanup_add(pool, (pool_cleanup_handler)cwmp_chunk_clear, (*news));
     return CWMP_OK;
@@ -308,21 +299,7 @@ int cwmp_chunk_write_string(cwmp_chunk_t * cb, const char * str, size_t length, 
 
         cb->bytes += writebytes;
         leftbytes -= writebytes;
-        /*if (leftbytes > 0)
-          {
-          if (cwmp_buffer_create(&buffer, pool) != CWMP_OK)
-          {
-          cwmp_log_error("create buffer out of memory\n");
-          return CWMP_ERROR;
-          }
-          cb->current->next = buffer;
-          cb->current = buffer;
-          }
-          else
-          {
-          break;
-          }
-          */
+
     }
 
     return writed;

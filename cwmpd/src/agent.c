@@ -409,11 +409,12 @@ void cwmp_agent_session(cwmp_t * cwmp)
 
     cwmp_set_envelope_ns(envstr, encstr);
 
-    if (cwmp_session_get_localip(local_ip) == -1)
+    if (cwmp_session_get_localip(local_ip,NULL,"eth0") == -1)
     {
         cwmp_log_error("get local ip error. exited.\n");
         exit(-1);
     }
+	
 
     print_param(cwmp->root, 0);
     
@@ -424,7 +425,7 @@ void cwmp_agent_session(cwmp_t * cwmp)
 
     CWMP_SPRINTF_PARAMETER_NAME(name, 3, InternetGatewayDeviceModule, ManagementServerModule, ConnectionRequestURLModule);
     TRsnprintf(value, 1024, "http://%s:%d", local_ip, cwmp->httpd_port);
-	//TRsnprintf(value, 1024, "http://%s:%d", "192.168.7.233", cwmp->httpd_port);
+	
     cwmp_data_set_parameter_value(cwmp, cwmp->root, name, value, TRstrlen(value), cwmp->pool);
 
     CWMP_SPRINTF_PARAMETER_NAME(name, 3, InternetGatewayDeviceModule, DeviceInfoModule, ManufacturerModule);

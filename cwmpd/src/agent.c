@@ -652,10 +652,20 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 
     if(need_set_wan)
     {
-        if(1)//ip gate in same subnet
+        struct in_addr s1,s2,net;
+
+        inet_pton(AF_INET,wan_config.ip,&s1);
+        inet_pton(AF_INET,wan_config.gateway,&s2);
+        inet_pton(AF_INET,wan_config.netmask,&net);
+
+        if((s1.s_addr & net.s_addr) == (s2.s_addr & net.s_addr))
         {
             dg_set_wan_config(&wan_config);
+        }else
+        {
+            cwmp_log_error("ip %s and gateway %s not in subnet %s",wan_config.ip,wan_config.gateway,wan_config.netmask);
         }
+        
     }
 
 	return ok;

@@ -25,15 +25,19 @@
  ***********************************************************************/
 
 #include "cwmp_module.h"
+#include "cwmp/session.h"
+#include "dg200_method.h"
 #include <cwmp/cfg.h>
 
 
 
 void cwmp_conf_init(cwmp_t * cwmp)
 {
+    int ret ;
     pool_t * pool;
     FUNCTION_TRACE();
 
+    /*read from conf file*/
     pool = cwmp->pool;
     cwmp->httpd_port =  cwmp_conf_get_int("cwmpd:httpd_port"); //cwmp_nvram_get_int("cwmp:httpd_port");
 
@@ -49,17 +53,13 @@ void cwmp_conf_init(cwmp_t * cwmp)
 	if(cwmp->cpe_auth)
 	{
 	    cwmp->cpe_user = cwmp_conf_pool_get(pool, "cwmp:cpe_username");
-    		cwmp->cpe_pwd = cwmp_conf_pool_get(pool, "cwmp:cpe_password");
+    	cwmp->cpe_pwd = cwmp_conf_pool_get(pool, "cwmp:cpe_password");
 
 	}
 
     cwmp->acs_url   =   cwmp_conf_pool_get(pool, "cwmp:acs_url"); //  "http://192.168.0.69:8000/otnms/acs/webservice.action";//cwmp_nvram_getdup(pool, "cwmp:acs_url");
 
     cwmp->cpe_mf    =   cwmp_conf_pool_get(pool, "cwmp:cpe_manufacture"); //     "ZTE"; //cwmp_nvram_getdup(pool, "cwmp:cpe_manufacture");
-
-    cwmp->cpe_oui   =   cwmp_conf_pool_get(pool, "cwmp:cpe_oui"); //   "00D0D0";cwmp_nvram_getdup(pool, "cwmp:cpe_oui");
-
-    cwmp->cpe_sn    =   cwmp_conf_pool_get(pool, "cwmp:cpe_sn"); //    "0410400AA11AA2255"; //cwmp_nvram_getdup(pool, "cwmp:cpe_sn");
 
     cwmp->cpe_name  =   cwmp_conf_pool_get(pool, "cwmp:cpe_name"); //  "00D0D0"; //cwmp_nvram_getdup(pool, "cwmp:cpe_name");
 
@@ -68,10 +68,31 @@ void cwmp_conf_init(cwmp_t * cwmp)
     cwmp_log_debug("url:%s\nmf:%s\noui:%s\nsn:%s\nname:%s\npc:%s\nhttpd port:%d\n",    cwmp->acs_url, cwmp->cpe_mf, cwmp->cpe_oui, cwmp->cpe_sn, cwmp->cpe_name, cwmp->cpe_pc,
                    cwmp->httpd_port);
 
-
     cwmp->event_filename = cwmp_conf_pool_get(pool, "cwmp:event_filename");
 
+    /*read from inter-process communication*/
+    dg_global_config_t _config;
+    char mac_buffer[32] = {0};
+    ret = dg_get_global_config(&_config);
+    if(ret < 0 )
+    {
+        cwmp_log_error("dg_global_config in conf error %d",ret);
+        return;
+    }
+    ret = cwmp_session_get_localip(NULL,mac_buffer,"eth0");
+    if(ret < 0)
+    {
+        cwmp_log_error("cwmp_session_get_localip int conf error \n");
+    }
 
+    mac_buffer[8] = '\0';
+    cwmp->cpe_oui = pool_pstrdup(pool,mac_buffer);
+    cwmp->cpe_sn = pool_pstrdup(pool,_config.serial_num);
+    cwmp->cpe_app_verson = pool_pstrdup(pool,_config.app_version);
+    cwmp->cpe_hw_version = pool_pstrdup(pool,_config.hardware_ver);
+    cwmp->cpe_spec = pool_pstrdup(pool,_config.model);
 
 }
+
+
 

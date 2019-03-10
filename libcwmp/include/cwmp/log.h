@@ -33,6 +33,9 @@
 #define CWMP_LOG_DEBUG_MAIL        0x200
 #define CWMP_LOG_DEBUG_SQL       0x400
 
+/*1 M*/
+#define LOG_FILE_MAX_SIZE   (1 * 1024 * 1024) 
+
 #ifdef WIN32
 #define FUNCTION_TRACE()	cwmp_log_debug("TRACE: %s()\n", __FUNCTION__)
 

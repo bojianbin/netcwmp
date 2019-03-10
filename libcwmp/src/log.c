@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "cwmp/log.h"
 
 struct cwmp_log_t
@@ -26,11 +27,6 @@ struct cwmp_log_t
 static cwmp_log_t 	    g_cwmp_log_file;
 static cwmp_log_t 		*	g_ot_log_file_ptr;
 
-
-
-
-
-//¶ÁÈ¡LogÅäÖÃÎÄ¼þ
 
 int cwmp_log_init(const char * filename, int level)
 {
@@ -62,7 +58,7 @@ void cwmp_log_fini()
         free(g_cwmp_log_file.name);
     }
 
-    if ((g_cwmp_log_file.file != stdout) && (g_cwmp_log_file.file != NULL))
+    if ((g_cwmp_log_file.name != NULL) && (g_cwmp_log_file.file != NULL))
     {
         fclose(g_cwmp_log_file.file);
     }
@@ -72,6 +68,7 @@ void cwmp_log_fini()
 void cwmp_log_write(int level, cwmp_log_t * log, const char * fmt, va_list ap)
 {
     cwmp_log_t * logger;
+    struct stat _stat;
 
     if (log)
     {
@@ -92,6 +89,20 @@ void cwmp_log_write(int level, cwmp_log_t * log, const char * fmt, va_list ap)
 
     logger = g_ot_log_file_ptr;
 
+    /*Not stdout,so we check the file size*/
+    if(logger->name)
+    {
+        if (logger->file &&
+            fstat(fileno(logger->file), &_stat) == 0 && 
+            (_stat.st_size > LOG_FILE_MAX_SIZE))
+        {
+            fclose(logger->file);
+            if ((logger->file = fopen(logger->name, "w")) == NULL)
+            {
+                return ;
+            }
+        }
+    }
 
 
     vfprintf(logger->file, fmt, ap);

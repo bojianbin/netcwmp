@@ -28,6 +28,7 @@
 #include "cwmp_agent.h"
 #include <cwmp/session.h>
 #include "modules/data_model.h"
+#include "dg200_method.h"
 
 #define CWMP_TRUE   1
 
@@ -447,177 +448,6 @@ void cwmp_agent_session(cwmp_t * cwmp)
 }
 
 
-/*
-int cwmp_agent_download_file(download_arg_t * dlarg)
-{
-    int faultcode = 0;
-    char url[255];
-    if (TRstrncasecmp(dlarg->url,  "ftp://", 6) == 0)
-    {
-        if (dlarg->username != NULL && strlen(dlarg->username) != 0)
-        {
-            TRsnprintf(url, 255, "ftp://%s:%s@%s", dlarg->username, dlarg->password, dlarg->url+6);
-        }
-        else
-        {
-            TRstrncpy(url, dlarg->url, 255);
-        }
-    }
-    else
-    {
-        TRstrncpy(url, dlarg->url, 255);
-    }
-
-    fetchIO * downfile =   fetchGetURL(url, "");
-    if (!downfile)
-    {
-        cwmp_log_debug("download file fail:  %s", url);
-        faultcode = 9001;
-    }
-    else
-    {
-        char readbuf[1024];
-        int readlen;
-        char targetfile[64];
-        if (dlarg->targetname != NULL && strlen(dlarg->targetname) != 0)
-        {
-            TRsnprintf(targetfile, 64, "/tmp/%s", dlarg->targetname);
-        }
-        else
-        {
-            TRsnprintf(targetfile, 64, "/tmp/%d.file", time(NULL));
-        }
-        FILE * df = fopen(targetfile, "wb+");
-        while (df != NULL)
-        {
-            readlen = fetchIO_read(downfile, readbuf, 1023);
-            if (readlen <= 0)
-            {
-                cwmp_log_debug("fetch io read zero. %s", readlen);
-                break;
-            }
-            readbuf[readlen] = 0;
-            fwrite(readbuf, readlen, 1, df);
-        }
-
-        if (df)
-        {
-            fclose(df);
-        }
-        else
-        {
-            faultcode = 9001;
-        }
-
-        cwmp_log_debug("download file ok:  %s, %s", url, targetfile);
-
-
-        fetchIO_close(downfile);
-    }
-
-
-    return faultcode;
-
-}
-
-
-
-int cwmp_agent_upload_file(upload_arg_t * ularg)
-{
-    int faultcode = 0;
-    char url[255];
-
-    if (TRstrncasecmp(ularg->url,  "ftp://", 6) == 0)
-    {
-        if (ularg->username != NULL && strlen(ularg->username) != 0)
-        {
-            TRsnprintf(url, 255, "ftp://%s:%s@%s", ularg->username, ularg->password, ularg->url+6);
-        }
-        else
-        {
-            TRstrncpy(url, ularg->url, 255);
-        }
-    }
-    else
-    {
-        TRstrncpy(url, ularg->url, 255);
-    }
-
-    fetchIO * uploadfile =   fetchPutURL(url, "");
-    if (!uploadfile)
-    {
-        cwmp_log_debug("upload file fail:  %s", url);
-        faultcode = 9001;
-    }
-    else
-    {
-        char readbuf[1024];
-        int readlen;
-	char targetfile[64];
-	FILE * uf;
-	int rc;
-	if(strcmp(ularg->filetype, "1 Vendor Configuration File") == 0)
-	{
-		//����ʵ�����, �޸�����������ļ�·��
-		
-		uf = fopen("/tmp/mysystem.cfg", "rb");		
-	}
-	else if(strcmp(ularg->filetype, "2 Vendor Log File") == 0)
-	{
-		//����ʵ�����, �޸�����������ļ�·��
-		uf = fopen("/tmp/mysystem.log", "rb");	
-	}
-	else
-	{
-		uf = fopen("/tmp/mysystem.log", "rb");	
-	}
-
-		
-        while (uf != NULL)
-        {
-            readlen = fread(readbuf, 1024, 1,  uf);
-            if (readlen <= 0)
-            {
-                cwmp_log_debug("fetch io read zero. %s", readlen);
-			
-                break;
-            }
-            readbuf[readlen] = 0;
-
-	   rc = fetchIO_write(uploadfile, readbuf, readlen);
-	   if(rc <= 0)
-	   {
-		faultcode = 9001;
-		break;
-	   }
-		
-        }
-
-	if(uf)
-	{
-		fclose(uf);
-	}
-	else
-	{
-		faultcode = 9001;
-	}
-	
-
-
-        cwmp_log_debug("upload file finished:  %s, file:%s", url, targetfile);
-
-
-        fetchIO_close(uploadfile);
-    }
-
-
-    return faultcode;
-
-}
-*/
-
-
-
 int cwmp_agent_download_file(download_arg_t * dlarg)
 {
     int faultcode = 0;
@@ -678,13 +508,51 @@ int cwmp_agent_upload_file(upload_arg_t * ularg)
     return faultcode;
 }
 
+int handle_common_task_wan(task_common_set_t *common_set,dg_wan_config_t * _config)
+{
+    int ret ;
+    
+    if(!common_set)
+        return -1;
 
+    switch( (long)(common_set->data1) )
+    {
+        case 1:
+            if(strcmp(common_set->data2,"DHCP") == 0)
+                _config->enable_dhcp = 1;
+            else
+            {
+                _config->enable_dhcp = 0;
+            }
+            break;
+        case 2:
+            snprintf(_config->ip,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
+            break;
+        case 3:
+            snprintf(_config->netmask,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
+            break;
+        case 4:
+            snprintf(_config->gateway,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
+            break;
+        case 5:
+            snprintf(_config->dns1,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
+            break;
+    }
+
+    FREE(common_set->data2);
+    FREE(common_set);
+
+    return 0;
+}
 
 int cwmp_agent_run_tasks(cwmp_t * cwmp)
 {
 	void * data;
+    int ret ;
 	int tasktype = 0;;
 	int ok = CWMP_NO;
+    int need_set_wan = 0 ;
+    dg_wan_config_t wan_config;
 
 	FUNCTION_TRACE();
 	
@@ -761,12 +629,34 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 				}
 				break;
 
+            case TASK_CALLBACK_TAG:
+                
+                cwmp_log_debug("task callback ...");
+                task_common_set_t *common_set =  data;
+                if(common_set->type == TASK_CALLBACK_WAN)
+                {
+                    if(need_set_wan == 0)
+                    {
+                        ret = dg_get_wan_config(&wan_config);
+                        if(ret < 0)
+                            return 0;
+                        need_set_wan = 1;
+                    }
+                    handle_common_task_wan(common_set,&wan_config);                   
+                }
+                break;
 			default:
-
 				break;
-
 		}
 	}
+
+    if(need_set_wan)
+    {
+        if(1)//ip gate in same subnet
+        {
+            dg_set_wan_config(&wan_config);
+        }
+    }
 
 	return ok;
 }
@@ -779,6 +669,7 @@ void cwmp_agent_start_session(cwmp_t * cwmp)
     xmldoc_t * newdoc;
     FUNCTION_TRACE();
     event_list_t  *evtlist;
+
     while (TRUE)
     {
         if (cwmp->new_request == CWMP_NO)
@@ -861,16 +752,6 @@ void cwmp_agent_start_session(cwmp_t * cwmp)
 					{
 						cwmp_log_debug("session data sended faild! rv=%d", rv);
 						session->status = CWMP_ST_EXIT;
-						/*
-						if (rv == CWMP_COULDNOT_CONNECT)
-						{
-							session->status = CWMP_ST_RETRY;
-						}
-						else
-	                    {
-	                        session->status = CWMP_ST_EXIT;
-	                    }
-						*/
 	                }
 	     
 

@@ -3,7 +3,7 @@
 int cpe_get_igd_di_manufacturer(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
     FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_manufacture");
+    *value = pool_pstrdup(pool,cwmp->cpe_mf);
     cwmp_log_debug("cpe_get_igd_di_manufacturer: value is %s", *value);
     return	FAULT_CODE_OK;
 }
@@ -12,7 +12,7 @@ int cpe_get_igd_di_manufacturer(cwmp_t * cwmp, const char * name, char ** value,
 int cpe_get_igd_di_manufactureroui(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
     FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_oui");
+    *value = pool_pstrdup(pool,cwmp->cpe_oui);
     return	FAULT_CODE_OK;
 }
 
@@ -20,7 +20,7 @@ int cpe_get_igd_di_manufactureroui(cwmp_t * cwmp, const char * name, char ** val
 int cpe_get_igd_di_productclass(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
     FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_pc");
+    *value = pool_pstrdup(pool,cwmp->cpe_pc);
     return	FAULT_CODE_OK;
 }
 
@@ -28,7 +28,7 @@ int cpe_get_igd_di_productclass(cwmp_t * cwmp, const char * name, char ** value,
 int cpe_get_igd_di_serialnumber(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
 	FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_sn");
+    *value = pool_pstrdup(pool,cwmp->cpe_sn);
     return	FAULT_CODE_OK;
 }
 
@@ -36,7 +36,7 @@ int cpe_get_igd_di_serialnumber(cwmp_t * cwmp, const char * name, char ** value,
 int cpe_get_igd_di_specversion(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
 	FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_specver");
+    *value = pool_pstrdup(pool,cwmp->cpe_spec);
     return	FAULT_CODE_OK;
 }
 
@@ -44,7 +44,7 @@ int cpe_get_igd_di_specversion(cwmp_t * cwmp, const char * name, char ** value, 
 int cpe_get_igd_di_hardwareversion(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
 	FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_hwver");
+    *value = pool_pstrdup(pool,cwmp->cpe_hw_version);
     return	FAULT_CODE_OK;
 }
 
@@ -52,7 +52,7 @@ int cpe_get_igd_di_hardwareversion(cwmp_t * cwmp, const char * name, char ** val
 int cpe_get_igd_di_softwareversion(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
 	FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_version");
+    *value = pool_pstrdup(pool,cwmp->cpe_app_verson);
     return	FAULT_CODE_OK;
 }
 
@@ -60,7 +60,7 @@ int cpe_get_igd_di_softwareversion(cwmp_t * cwmp, const char * name, char ** val
 int cpe_get_igd_di_provisioningcode(cwmp_t * cwmp, const char * name, char ** value, pool_t * pool)
 {
 	FUNCTION_TRACE();
-    *value = cwmp_conf_pool_get(pool, "cwmp:cpe_pc");
+    *value = pool_pstrdup(pool,cwmp->cpe_spec);
     return	FAULT_CODE_OK;
 }
 

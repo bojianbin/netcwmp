@@ -1061,10 +1061,10 @@ parameter_node_t * cwmp_get_parameter_path_node(parameter_node_t * parent, const
 
         while (param_node && param_node->name)
         {
-	    if(TRstrcmp(param_node->name, "{i}") == 0)
+	        if(TRstrcmp(param_node->name, "{i}") == 0)
             {
-		param_node = param_node->next_sibling;
-		continue;
+		        param_node = param_node->next_sibling;
+		        continue;
             }
 
 

@@ -27,6 +27,16 @@ model_func_t ModelFunction[] =
 	{"cpe_refresh_igd_wandevice", cpe_refresh_igd_wandevice},
     {"cpe_refresh_igd_wanconnectiondevice", cpe_refresh_igd_wanconnectiondevice},
     {"cpe_refresh_igd_wanipconnection", cpe_refresh_igd_wanipconnection},
+    {"cpe_get_igd_wd_wcd_wic_externalip",cpe_get_igd_wd_wcd_wic_externalip},
+    {"cpe_set_igd_wd_wcd_wic_externalip",cpe_set_igd_wd_wcd_wic_externalip},
+    {"cpe_get_igd_wd_wcd_wic_type",cpe_get_igd_wd_wcd_wic_type},
+    {"cpe_set_igd_wd_wcd_wic_type",cpe_set_igd_wd_wcd_wic_type},
+    {"cpe_get_igd_wd_wcd_wic_subnetmask",cpe_get_igd_wd_wcd_wic_subnetmask},
+    {"cpe_set_igd_wd_wcd_wic_subnetmask",cpe_set_igd_wd_wcd_wic_subnetmask},
+    {"cpe_get_igd_wd_wcd_wic_defaultgateway",cpe_get_igd_wd_wcd_wic_defaultgateway},
+    {"cpe_set_igd_wd_wcd_wic_defaultgateway",cpe_set_igd_wd_wcd_wic_defaultgateway},
+    {"cpe_get_igd_wd_wcd_wic_dns",cpe_get_igd_wd_wcd_wic_dns},
+    {"cpe_set_igd_wd_wcd_wic_dns",cpe_set_igd_wd_wcd_wic_dns},
 
 };
 

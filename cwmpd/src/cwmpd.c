@@ -38,13 +38,65 @@ static pool_t * cwmp_global_pool;
 
 
 
-void cwmp_daemon()
+/**
+ *  daemonize process
+ * 
+ * @note: 
+ *
+ *
+ * @param[in] _chdir	  	:change process current dir "/"
+ * @param[in] close_stdfd	:close fd 0,1 and 2
+ *
+ * @return: 0 if success . -1 if error
+ */
+int cwmp_daemon(int _chdir, int close_stdfd)
 {
-    //daemon(0, 1);
+    int fd;
+
+	if (fork() != 0) 
+		exit(0); /* parent exits */
+
+	setsid(); /* create a new session */
+
+    if (_chdir == 1) 
+	{
+        if(chdir("/") != 0) 
+		{
+            perror("chdir");
+            return (-1);
+        }
+    }
+
+    if (close_stdfd == 1 && (fd = open("/dev/null", O_RDWR, 0)) != -1) 
+	{
+        if(dup2(fd, STDIN_FILENO) < 0) 
+		{
+            perror("dup2 stdin");
+            return (-1);
+        }
+        if(dup2(fd, STDOUT_FILENO) < 0) 
+		{
+            perror("dup2 stdout");
+            return (-1);
+        }
+        if(dup2(fd, STDERR_FILENO) < 0) 
+		{
+            perror("dup2 stderr");
+            return (-1);
+        }
+
+        if (fd > STDERR_FILENO) 
+		{
+            if(close(fd) < 0) 
+			{
+                perror("close");
+                return (-1);
+            }
+        }
+    }
+	
+    return (0);
 }
-
-
-
 
 void cwmp_getopt(int argc, char **argv)
 {
@@ -121,7 +173,7 @@ int main(int argc, char **argv)
 
     cwmp_getopt(argc, argv);
    
-    cwmp_daemon();
+    //cwmp_daemon(1,0);
 
 	cwmp_set_var(cwmp);
 	

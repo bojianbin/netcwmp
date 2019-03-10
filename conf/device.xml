@@ -47,12 +47,12 @@
 							<object name="WANIPConnection" refresh_func="cpe_refresh_igd_wanipconnection">
 								<object name="{i}">
 									<param name="Enable" rw="1" type="s" get_func="" set_func=""/>
-									<param name="AddressingType" noti_rw="1" rw="1" get_func="" set_func=""/>
-									<param name="ExternalIPAddress" noti_rw="1" rw="1" get_func="" set_func=""/>
-									<param name="SubnetMask" noti_rw="1" rw="1" get_func="" set_func=""/>
-									<param name="DefaultGateway" rw="1" get_func="" set_func=""/>
-									<param name="DNSServers" rw="1" get_func="" set_func=""/>
-									<param name="MACAddress" rw="1" get_func="" set_func=""/>
+									<param name="AddressingType" noti_rw="1" rw="1" get_func="cpe_get_igd_wd_wcd_wic_type" set_func="cpe_set_igd_wd_wcd_wic_externalip"/>
+									<param name="ExternalIPAddress" noti_rw="1" rw="1" get_func="cpe_get_igd_wd_wcd_wic_externalip" set_func="cpe_set_igd_wd_wcd_wic_externalip"/>
+									<param name="SubnetMask" noti_rw="1" rw="1" get_func="cpe_get_igd_wd_wcd_wic_subnetmask" set_func="cpe_set_igd_wd_wcd_wic_subnetmask"/>
+									<param name="DefaultGateway" rw="1" get_func="cpe_get_igd_wd_wcd_wic_defaultgateway" set_func="cpe_set_igd_wd_wcd_wic_defaultgateway"/>
+									<param name="DNSServers" rw="1" get_func="cpe_get_igd_wd_wcd_wic_dns" set_func="cpe_set_igd_wd_wcd_wic_dns"/>
+									<param name="MACAddress" rw="1" get_func="cpe_get_igd_wd_wcd_wic_mac" set_func="cpe_set_igd_wd_wcd_wic_mac"/>
 									<object name="Stats">
 										<param name="EthernetBytesSent" get_func=""/>
 										<param name="EthernetBytesReceived" get_func=""/>

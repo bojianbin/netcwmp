@@ -350,6 +350,9 @@ struct cwmp_st
 	char * cpe_sn;
 	char * cpe_pc;
 	char * cpe_name;
+	char * cpe_app_verson;
+	char * cpe_hw_version;
+	char * cpe_spec;
 
 	char * acs_user;
 	char * acs_pwd;
@@ -366,7 +369,7 @@ struct cwmp_st
 
 	event_global_t    event_global;
 
-	transfer_t    transfer_info;      //ÓÃÓÚDownloadºÍUpload
+	transfer_t    transfer_info;      //ï¿½ï¿½ï¿½ï¿½Downloadï¿½ï¿½Upload
 
 	queue_t  *	queue;
 

@@ -448,11 +448,11 @@ void cwmp_agent_session(cwmp_t * cwmp)
 }
 
 
-int cwmp_agent_download_file(download_arg_t * dlarg)
+int cwmp_agent_download_file(download_arg_t * dlarg,cwmp_t * cwmp,int * _type)
 {
     int faultcode = 0;
     char * fromurl = dlarg->url;
-    char * tofile = "/tmp/download.img";
+    char * tofile = NULL;
 
     FUNCTION_TRACE();
 
@@ -460,7 +460,33 @@ int cwmp_agent_download_file(download_arg_t * dlarg)
 	{
 	    return 9001;
 	}
+	if(!dlarg || !cwmp)
+		return 9001;
 
+	if(!dlarg->filetype)
+		return 9001;
+
+	if(strstr(dlarg->filetype,"Configuration")!= NULL
+		|| strstr(dlarg->filetype,"configuration")!= NULL)
+	{
+		
+		tofile = cwmp->config_filename;
+		
+		*_type = 1;
+		
+	}else if(strstr(dlarg->filetype,"Upgrade")!= NULL
+		|| strstr(dlarg->filetype,"upgrade")!= NULL)
+	{
+		
+		tofile = cwmp->upgrade_filename;
+		
+		*_type = 2;
+	}
+	else
+	{
+		*_type = 3;
+	}
+	
     faultcode = http_receive_file(fromurl, tofile);
 
     if(faultcode != CWMP_OK)
@@ -512,7 +538,7 @@ int handle_common_task_wan(task_common_set_t *common_set,dg_wan_config_t * _conf
 {
     int ret ;
     
-    if(!common_set)
+    if(!common_set || !_config)
         return -1;
 
     switch( (long)(common_set->data1) )
@@ -570,11 +596,16 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 			case TASK_DOWNLOAD_TAG:
 				{
 					download_arg_t * dlarg = (download_arg_t*)data;
-					
+					/*
+					 * 1:configuration file 
+					 * 2:upgrade file
+					 * 3:other file
+					 */
+					int download_type = 0;
 					time_t starttime = time(NULL);
 					int faultcode = 0;
 
-					faultcode = cwmp_agent_download_file(dlarg);
+					faultcode = cwmp_agent_download_file(dlarg,cwmp,&download_type);
 					
 					time_t endtime = time(NULL);
 					cwmp_event_set_value(cwmp, INFORM_TRANSFERCOMPLETE, 1,dlarg->cmdkey, faultcode, starttime, endtime);
@@ -582,9 +613,19 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					cwmp_event_clear_active(cwmp);
 					cwmp_clone_download_arg_free(dlarg);
 
-					
-					//handle the event and reboot if any
-					
+					switch(download_type)
+					{
+						case 1:
+							/*configuration file*/
+							dg_set_para_file(cwmp->config_filename);
+							break;
+						case 2:
+							/*upgrade file*/
+							dg_upgrade_system(cwmp->upgrade_filename);
+							break;
+						default:
+							break;
+					}
 					
 				}
 				break;
@@ -614,7 +655,10 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					cwmp_log_debug("reboot ...");
 					cwmp_event_set_value(cwmp, INFORM_MREBOOT, 1, NULL, 0, 0, 0);
 					cwmp_event_clear_active(cwmp);
-					//system("reboot");
+
+					ret = dg_reboot_system();
+					if(ret < 0)
+						cwmp_log_error("dg_reboot_system() error");
 				}
 				break;
 
@@ -625,7 +669,11 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					if(cwmp->event_filename)
 						unlink(cwmp->event_filename);
 					
-					//handle system reset 
+					ret = dg_reset_system();
+					if(ret < 0)
+					{
+						cwmp_log_error("dg_reset_system error");
+					}
 				}
 				break;
 
@@ -639,7 +687,7 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
                     {
                         ret = dg_get_wan_config(&wan_config);
                         if(ret < 0)
-                            return 0;
+                            break;
                         need_set_wan = 1;
                     }
                     handle_common_task_wan(common_set,&wan_config);                   
@@ -658,14 +706,17 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
         inet_pton(AF_INET,wan_config.gateway,&s2);
         inet_pton(AF_INET,wan_config.netmask,&net);
 
+		/*in same subnet*/
         if((s1.s_addr & net.s_addr) == (s2.s_addr & net.s_addr))
         {
-            dg_set_wan_config(&wan_config);
+            ret = dg_set_wan_config(&wan_config);
+			if(ret < 0 )
+				cwmp_log_error("dg_set_wan_config error in run task");
         }else
         {
             cwmp_log_error("ip %s and gateway %s not in subnet %s",wan_config.ip,wan_config.gateway,wan_config.netmask);
         }
-        
+        need_set_wan = 0;
     }
 
 	return ok;

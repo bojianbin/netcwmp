@@ -395,7 +395,7 @@ int dg_get_wan_config(dg_wan_config_t * _config)
 {
 	int ret = 0 ;
 	pool_t * pool = NULL;
-	char *url = "http://127.0.0.1/AppManager/GetIfConfig?Manager=1";
+	char *url = "http://192.168.10.125/AppManager/GetIfConfig?Manager=1";
 
 	pool = pool_create(POOL_DEFAULT_SIZE);
 	if(pool == NULL)
@@ -412,7 +412,7 @@ int dg_set_wan_config(dg_wan_config_t * _config)
 	pool_t * pool = NULL;
 	cwmp_chunk_t *chunk = NULL;
 	char data_buff[1024] = {0};
-	char *url = "http://127.0.0.1/AppManager/SetIfConfig?Manager=1";
+	char *url = "http://192.168.10.125/AppManager/SetIfConfig?Manager=1";
 	char *format = 
 		"{ "\
 		"\"bEnableDHCP\":%d,"\
@@ -582,7 +582,7 @@ int dg_reboot_system()
 {
 	dg_outcom_t outcome;
 	int ret = 0 , retvalue = -1;
-	char * url = "http://127.0.0.1/AppManager/SetReboot?Manager=1";
+	char * url = "http://192.168.10.125/AppManager/SetReboot?Manager=1";
 	pool_t *pool = NULL;
 
 	pool = pool_create(POOL_DEFAULT_SIZE);

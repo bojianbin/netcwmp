@@ -69,6 +69,16 @@ void cwmp_conf_init(cwmp_t * cwmp)
                    cwmp->httpd_port);
 
     cwmp->event_filename = cwmp_conf_pool_get(pool, "cwmp:event_filename");
+	cwmp->config_filename = cwmp_conf_pool_get(pool,"cwmp:configuration_filename");
+	cwmp->upgrade_filename = cwmp_conf_pool_get(pool,"cwmp:upgrade_filename");
+	if(!cwmp->config_filename)
+	{
+		cwmp->config_filename = pool_pstrdup(pool, "/usr/dmboxupgrade/para.bin");
+	}
+	if(!cwmp->upgrade_filename)
+	{
+		cwmp->upgrade_filename = pool_pstrdup(pool, "/usr/dmboxupgrade/upgrade.bin");
+	}
 
     /*read from inter-process communication*/
     dg_global_config_t _config;

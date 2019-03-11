@@ -354,6 +354,9 @@ struct cwmp_st
 	char * cpe_hw_version;
 	char * cpe_spec;
 
+	char * config_filename;
+	char * upgrade_filename;
+
 	char * acs_user;
 	char * acs_pwd;
 	char * cpe_user;

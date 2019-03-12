@@ -89,33 +89,27 @@ static void * pool_alloc(size_t size)
 
 
 
-#if (POOLITE_HAVE_POSIX_MEMALIGN)
+#ifndef WIN32
 
 void * pool_memalign(size_t alignment, size_t size)
 {
-	void  *p;
+	void  *p = NULL;
 
 	if (posix_memalign(&p, alignment, size) == -1)
 	{
-		//        cwmp_log_error("posix_memalign() %uz bytes aligned to %uz failed",
-		size, alignment);
+		p = NULL;
 	}
+
 	return p;
 }
 
-#elif (POOLITE_HAVE_MEMALIGN)
+#else
 
 static void * pool_memalign(size_t alignment, size_t size)
 {
 	void  *p;
 
-	//p = memalign(alignment, size);
-	if (p == NULL)
-	{
-		//        cwmp_log_error("memalign() %uz bytes aligned to %uz failed",
-		size, alignment);
-	}
-
+	p = memalign(alignment, size);
 
 	return p;
 }
@@ -401,12 +395,12 @@ pool_pmemalign(pool_t *pool, size_t size, size_t alignment)
 	void              *p;
 	pool_large_t  *large;
 
-	/*p = pool_memalign(alignment, size);
-	  if (p == NULL) {
+	p = pool_memalign(alignment, size);
+	if (p == NULL) 
+	{
 	  return NULL;
-	  }
-	 */
-	//FUNCTION_TRACE();
+	}
+
 
 	large = pool_palloc(pool, sizeof(pool_large_t));
 	if (large == NULL)
@@ -536,7 +530,7 @@ pool_delete_file(void *data)
 
 
 
-	if (unlink(c->name) == -1)
+	if (unlink((char *)c->name) == -1)
 	{
 		err = errno;
 
@@ -613,7 +607,7 @@ void * pool_pmemdup(pool_t * pool, const  void * ptr, size_t size)
 char * pool_pstrdup(pool_t * pool, const  void * ptr)
 {
 	size_t s;
-	if (!ptr || ptr == "")
+	if (!ptr)
 	{
 		return NULL;
 	}

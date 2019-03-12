@@ -321,7 +321,7 @@ static int cwmp_model_init_object(cwmp_t * cwmp, parameter_node_t *param)
 
     if(param->type == TYPE_OBJECT && param->refresh)
     {
-        //µ÷ÓÃrefreshº¯Êý
+        //ï¿½ï¿½ï¿½ï¿½refreshï¿½ï¿½ï¿½ï¿½
         if(param->refresh)
         {
             param->refresh(cwmp, param, callback_register_task);
@@ -403,7 +403,7 @@ int cwmp_model_load_parameter(cwmp_t * cwmp, xmldoc_t * doc, model_func_t * func
     cwmp->root = root_param->child;
 
     cwmp_model_init_object(cwmp, cwmp->root);
-
+    return 0;
 }
 
 int cwmp_model_load_xml(cwmp_t * cwmp, const char * xmlfile, model_func_t * func_list, int func_count)
@@ -411,6 +411,7 @@ int cwmp_model_load_xml(cwmp_t * cwmp, const char * xmlfile, model_func_t * func
 
     xmldoc_t *  doc;
     size_t xmllen, nread ;
+    pool_t * pool = NULL;
 
     FILE * fp = fopen(xmlfile, "rb");
     if(!fp)
@@ -421,6 +422,7 @@ int cwmp_model_load_xml(cwmp_t * cwmp, const char * xmlfile, model_func_t * func
 
     fseek(fp, 0, SEEK_END);
     xmllen = ftell(fp);
+    pool = pool_create(POOL_DEFAULT_SIZE);
 
 
     char * buf = (char*)MALLOC(sizeof(char)*(xmllen+1));
@@ -432,7 +434,6 @@ int cwmp_model_load_xml(cwmp_t * cwmp, const char * xmlfile, model_func_t * func
     fseek(fp, 0, SEEK_SET);
     nread = fread(buf, 1, xmllen, fp);
     buf[nread] = 0;
-    pool_t * pool = pool_create(POOL_DEFAULT_SIZE);
     doc = XmlParseBuffer(pool, buf);
     if (!doc)
     {
@@ -448,6 +449,8 @@ finish:
     FREE(buf);
     fclose(fp);
     pool_destroy(pool);
+
+    return 0;
 }
 
 

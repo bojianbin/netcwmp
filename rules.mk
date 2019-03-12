@@ -36,6 +36,7 @@ INSTALL_DATA:=install -m0644
 INSTALL_CONF:=install -m0600
 
 CFLAGS = -I$(TOP_DIR)/build/include
+CFLAGS += -Wall -Wno-unused-function -Wno-unused-variable  -Wno-unused-but-set-variable -O2
 LDFLAGS = -L$(TOP_DIR)/build/lib
 
 TERM_BOLD := $(shell tput smso 2>/dev/null)

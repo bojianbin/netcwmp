@@ -1338,7 +1338,7 @@ int http_check_digest_auth(const char * auth_realm, const char * auth, char * cp
     for (s += 6;  isspace(*s); s++);
 
     end = s + strlen(s);
-    memset(buffer, 128, 0);
+    memset(buffer, 0, 128);
     while (s<end)
     {
         if (!strncmp(s, "username=", 9))
@@ -1437,7 +1437,7 @@ int http_parse_digest_auth(const char * auth, http_digest_auth_t * digest_auth)
     for (s += 6;  isspace(*s); s++);
 
     end = s + strlen(s);
-    memset(buffer, 128, 0);
+    memset(buffer, 0, 128);
     while (s<end)
     {
         if (!strncmp(s, "realm=", 6))

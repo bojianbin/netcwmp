@@ -23,7 +23,7 @@ void  cwmp_buffer_clear(void * data)
     b = (cwmp_buffer_t*)data;
     b->writed = 0;
     b->readed = 0;
-    b->offset = b->string;
+    b->offset = (char *)b->string;
     b->size = DEFAULT_BUFFER_SIZE;
     b->next = 0;
     b->string[0] = 0;
@@ -41,7 +41,7 @@ int cwmp_buffer_create(cwmp_buffer_t **news, pool_t * pool)
     (*news)->size = DEFAULT_BUFFER_SIZE;
     (*news)->writed = 0;
     (*news)->readed = 0;
-    (*news)->offset = (*news)->string;
+    (*news)->offset = (char *)(*news)->string;
     (*news)->next = 0;
     (*news)->string[0] = 0;
 
@@ -55,7 +55,7 @@ int cwmp_buffer_init(cwmp_buffer_t * b)
     b->writed = 0;
     b->readed = 0;
     b->size = DEFAULT_BUFFER_SIZE;
-    b->offset = b->string;
+    b->offset = (char *)b->string;
     b->next = 0;
     b->string[0] = 0;
     return CWMP_OK;
@@ -73,12 +73,12 @@ void  cwmp_buffer_free(cwmp_buffer_t * b, pool_t * pool)
 
 char * cwmp_buffer_current(cwmp_buffer_t * b)
 {
-    return b->string + b->writed;
+    return (char *)(b->string + b->writed);
 }
 
 char * cwmp_buffer_string(cwmp_buffer_t * b)
 {
-    return b->string;
+    return (char *)b->string;
 }
 
 size_t cwmp_buffer_length(cwmp_buffer_t * b)

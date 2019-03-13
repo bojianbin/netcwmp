@@ -26,7 +26,6 @@
 
 #include "cwmp_module.h"
 #include "cwmp/session.h"
-#include "dg200_method.h"
 #include <cwmp/cfg.h>
 
 
@@ -80,27 +79,12 @@ void cwmp_conf_init(cwmp_t * cwmp)
 		cwmp->upgrade_filename = pool_pstrdup(pool, "/usr/dmboxupgrade/upgrade.bin");
 	}
 
-    /*read from inter-process communication*/
-    dg_global_config_t _config;
-    char mac_buffer[32] = {0};
-    ret = dg_get_global_config(&_config);
-    if(ret < 0 )
-    {
-        cwmp_log_error("dg_global_config in conf error %d",ret);
-        return;
-    }
-    ret = cwmp_session_get_localip(NULL,mac_buffer,"eth0");
-    if(ret < 0)
-    {
-        cwmp_log_error("cwmp_session_get_localip int conf error \n");
-    }
 
-    mac_buffer[8] = '\0';
-    cwmp->cpe_oui = pool_pstrdup(pool,mac_buffer);
-    cwmp->cpe_sn = pool_pstrdup(pool,_config.serial_num);
-    cwmp->cpe_app_verson = pool_pstrdup(pool,_config.app_version);
-    cwmp->cpe_hw_version = pool_pstrdup(pool,_config.hardware_ver);
-    cwmp->cpe_spec = pool_pstrdup(pool,_config.model);
+    cwmp->cpe_oui = pool_pstrdup(pool,"OUI_example");
+    cwmp->cpe_sn = pool_pstrdup(pool,"sn_example");
+    cwmp->cpe_app_verson = pool_pstrdup(pool,"version_example");
+    cwmp->cpe_hw_version = pool_pstrdup(pool,"hwversion_example");
+    cwmp->cpe_spec = pool_pstrdup(pool,"spec_example");
 
 }
 

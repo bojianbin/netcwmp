@@ -28,7 +28,6 @@
 #include "cwmp_agent.h"
 #include <cwmp/session.h>
 #include "modules/data_model.h"
-#include "dg200_method.h"
 
 #define CWMP_TRUE   1
 
@@ -535,42 +534,7 @@ int cwmp_agent_upload_file(upload_arg_t * ularg)
     return faultcode;
 }
 
-int handle_common_task_wan(task_common_set_t *common_set,dg_wan_config_t * _config)
-{
-    int ret ;
-    
-    if(!common_set || !_config)
-        return -1;
 
-    switch( (long)(common_set->data1) )
-    {
-        case 1:
-            if(strcmp(common_set->data2,"DHCP") == 0)
-                _config->enable_dhcp = 1;
-            else
-            {
-                _config->enable_dhcp = 0;
-            }
-            break;
-        case 2:
-            snprintf(_config->ip,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
-            break;
-        case 3:
-            snprintf(_config->netmask,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
-            break;
-        case 4:
-            snprintf(_config->gateway,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
-            break;
-        case 5:
-            snprintf(_config->dns1,DG_IP_STRING_LEN,"%s",(char *)common_set->data2);
-            break;
-    }
-
-    FREE(common_set->data2);
-    FREE(common_set);
-
-    return 0;
-}
 
 int cwmp_agent_run_tasks(cwmp_t * cwmp)
 {
@@ -579,7 +543,6 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 	int tasktype = 0;;
 	int ok = CWMP_NO;
     int need_set_wan = 0 ;
-    dg_wan_config_t wan_config;
 
 	FUNCTION_TRACE();
 	
@@ -618,11 +581,11 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					{
 						case 1:
 							/*configuration file*/
-							dg_set_para_file(cwmp->config_filename);
+							//dg_set_para_file(cwmp->config_filename);
 							break;
 						case 2:
 							/*upgrade file*/
-							dg_upgrade_system(cwmp->upgrade_filename);
+							//dg_upgrade_system(cwmp->upgrade_filename);
 							break;
 						default:
 							break;
@@ -657,9 +620,9 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					cwmp_event_set_value(cwmp, INFORM_MREBOOT, 1, NULL, 0, 0, 0);
 					cwmp_event_clear_active(cwmp);
 
-					ret = dg_reboot_system();
-					if(ret < 0)
-						cwmp_log_error("dg_reboot_system() error");
+					//ret = dg_reboot_system();
+					//if(ret < 0)
+					//	cwmp_log_error("dg_reboot_system() error");
 				}
 				break;
 
@@ -670,11 +633,11 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
 					if(cwmp->event_filename)
 						unlink(cwmp->event_filename);
 					
-					ret = dg_reset_system();
-					if(ret < 0)
-					{
-						cwmp_log_error("dg_reset_system error");
-					}
+					//ret = dg_reset_system();
+					//if(ret < 0)
+					//{
+					//	cwmp_log_error("dg_reset_system error");
+					//}
 				}
 				break;
 
@@ -684,42 +647,13 @@ int cwmp_agent_run_tasks(cwmp_t * cwmp)
                 task_common_set_t *common_set =  data;
                 if(common_set->type == TASK_CALLBACK_WAN)
                 {
-                    if(need_set_wan == 0)
-                    {
-                        ret = dg_get_wan_config(&wan_config);
-                        if(ret < 0)
-                            break;
-                        need_set_wan = 1;
-                    }
-                    handle_common_task_wan(common_set,&wan_config);                   
+                  
                 }
                 break;
 			default:
 				break;
 		}
 	}
-
-    if(need_set_wan)
-    {
-        struct in_addr s1,s2,net;
-
-        inet_pton(AF_INET,wan_config.ip,&s1);
-        inet_pton(AF_INET,wan_config.gateway,&s2);
-        inet_pton(AF_INET,wan_config.netmask,&net);
-
-		/*in same subnet*/
-        if((s1.s_addr & net.s_addr) == (s2.s_addr & net.s_addr))
-        {
-            ret = dg_set_wan_config(&wan_config);
-			if(ret < 0 )
-				cwmp_log_error("dg_set_wan_config error in run task");
-        }else
-        {
-            cwmp_log_error("ip %s and gateway %s not in subnet %s",wan_config.ip,wan_config.gateway,wan_config.netmask);
-        }
-        need_set_wan = 0;
-    }
-
 	return ok;
 }
 
